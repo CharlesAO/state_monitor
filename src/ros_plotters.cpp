@@ -131,3 +131,27 @@ void ImuPlotter::callback(const sensor_msgs::ImuConstPtr &msg) {
                                             msg->angular_velocity.y,
                                             msg->angular_velocity.z);
 }
+
+#ifdef MSF_FOUND
+MSFStatePlotter::MSFStatePlotter(
+    const ros::NodeHandle &nh, const std::string &topic,
+    const std::shared_ptr<mglGraph> &gr, const double keep_data_for_secs,
+    const size_t num_subplots_wide, const size_t num_subplots_high,
+    const size_t linear_acceleration_bias_subplot_idx,
+    const size_t angular_velocity_bias_subplot_idx)
+    : RosPlotter(nh, topic, gr, keep_data_for_secs, num_subplots_wide,
+                 num_subplots_high, {"Linear Acceleration Bias (m^2/s)",
+                                     "Angular Velocity Bias (rads/s)"},
+                 {linear_acceleration_bias_subplot_idx,
+                  angular_velocity_bias_subplot_idx}) {}
+
+void MSFStatePlotter::callback(
+    const sensor_fusion_comm::DoubleArrayStampedConstPtr &msg) {
+  const double t = msg->header.stamp.toSec();
+  sub_plots_[LINEAR_ACCELERATION_BIAS].addDataPoint(
+      t, msg->data[13], msg->data[14], msg->data[15]);
+  sub_plots_[ANGULAR_VELOCITY_BIAS].addDataPoint(t, msg->data[10],
+                                                 msg->data[11], msg->data[12]);
+}
+
+#endif

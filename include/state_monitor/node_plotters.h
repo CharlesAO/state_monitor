@@ -26,4 +26,13 @@ class SWFPlotter : public NodePlotter {
              const double keep_data_for_secs);
 };
 
+#ifdef MSF_FOUND
+class MSFPlotter : public NodePlotter {
+ public:
+  MSFPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
+             const std::shared_ptr<mglGraph>& gr,
+             const double keep_data_for_secs);
+};
+#endif
+
 #endif  // NODE_PLOTTERS_STATE_MONITOR_H

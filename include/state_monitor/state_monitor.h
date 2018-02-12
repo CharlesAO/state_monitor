@@ -8,13 +8,16 @@ class StateMonitor {
   StateMonitor(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private);
 
  private:
-  void createNodePlotterFromTopicInfo(
-      const ros::master::TopicInfo& topic_info);
+  void createNodePlotterFromTopicInfo(const ros::master::TopicInfo& topic_info);
 
   void nodeSearchCallback(const ros::TimerEvent& event);
 
   // cycle state estimator in focus
   void cycleFocus(const int key);
+
+  static void replaceSubString(const std::string& subject,
+                               const std::string& search,
+                               const std::string& replace, std::string* result);
 
   void printSidebar();
 
@@ -32,4 +35,4 @@ class StateMonitor {
   std::string node_in_focus_;
 };
 
-#endif //STATE_MONITOR_STATE_MONITOR_H
+#endif  // STATE_MONITOR_STATE_MONITOR_H

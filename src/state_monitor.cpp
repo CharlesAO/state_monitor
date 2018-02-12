@@ -13,7 +13,10 @@ StateMonitor::StateMonitor(const ros::NodeHandle& nh,
 
 void StateMonitor::createNodePlotterFromTopicInfo(
     const ros::master::TopicInfo& topic_info) {
-  size_t match = topic_info.name.find("swf/local_odometry");
+  size_t match;
+
+  // SWF
+  match = topic_info.name.find("swf/local_odometry");
   if (match != std::string::npos) {
     const std::string topic_base = topic_info.name.substr(0, match);
     node_plotter_map_.emplace(std::make_pair(
@@ -22,6 +25,20 @@ void StateMonitor::createNodePlotterFromTopicInfo(
                                      plot_time_length_secs_)));
     return;
   }
+
+// MSF
+#ifdef MSF_FOUND
+  match = topic_info.name.find("state_out");
+  if ((match != std::string::npos) &&
+      (topic_info.datatype == "sensor_fusion_comm/DoubleArrayStamped")) {
+    const std::string topic_base = topic_info.name.substr(0, match);
+    node_plotter_map_.emplace(std::make_pair(
+        topic_base,
+        std::make_shared<MSFPlotter>(topic_base, nh_, x11_window_.getMGLGraph(),
+                                     plot_time_length_secs_)));
+    return;
+  }
+#endif
 }
 
 void StateMonitor::nodeSearchCallback(const ros::TimerEvent& event) {
@@ -60,6 +77,18 @@ void StateMonitor::cycleFocus(const int key) {
   }
 }
 
+void StateMonitor::replaceSubString(const std::string& subject,
+                                    const std::string& search,
+                                    const std::string& replace,
+                                    std::string* result) {
+  *result = subject;
+  size_t pos = 0;
+  while ((pos = result->find(search, pos)) != std::string::npos) {
+    result->replace(pos, search.length(), replace);
+    pos += replace.length();
+  }
+}
+
 void StateMonitor::printSidebar() {
   std::shared_ptr<mglGraph> gr = x11_window_.getMGLGraph();
   gr->SubPlot(4, 1, 0, "");
@@ -71,6 +100,10 @@ void StateMonitor::printSidebar() {
 
   for (auto it = node_plotter_map_.begin(); it != node_plotter_map_.end();
        ++it) {
+    // replace special characters (currently just _ )
+    std::string text_to_print;
+    replaceSubString(it->first, "_", "\\_", &text_to_print);
+
     std::string format;
     if (node_plotter_map_.find(node_in_focus_) == it) {
       format = "y:L";
@@ -79,8 +112,8 @@ void StateMonitor::printSidebar() {
     }
 
     text_location -= 0.05;
-    gr->Puts(mglPoint(0, text_location), ("  \\b{" + it->first + "}").c_str(),
-             format.c_str(), 5);
+    gr->Puts(mglPoint(0, text_location),
+             ("  \\b{" + text_to_print + "}").c_str(), format.c_str(), 5);
   }
 }
 

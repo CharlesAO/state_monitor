@@ -8,6 +8,10 @@
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
 
+#ifdef MSF_FOUND
+#include <sensor_fusion_comm/DoubleArrayStamped.h>
+#endif
+
 #include "state_monitor/sub_plotter.h"
 
 // needed so we can use a pointer to a plotter of unknown type to kick off a
@@ -136,5 +140,24 @@ class ImuPlotter : public RosPlotter<sensor_msgs::ImuConstPtr, 3, 3> {
 
   enum PlotOrder { LINEAR_ACCELERATION, ORIENTATION, ANGULAR_VELOCITY };
 };
+
+#ifdef MSF_FOUND
+class MSFStatePlotter
+    : public RosPlotter<sensor_fusion_comm::DoubleArrayStampedConstPtr, 2, 3> {
+ public:
+  MSFStatePlotter(const ros::NodeHandle &nh, const std::string &topic,
+                  const std::shared_ptr<mglGraph> &gr,
+                  const double keep_data_for_secs,
+                  const size_t num_subplots_wide,
+                  const size_t num_subplots_high,
+                  const size_t linear_acceleration_bias_subplot_idx,
+                  const size_t angular_velocity_bias_subplot_idx);
+
+ private:
+  void callback(const sensor_fusion_comm::DoubleArrayStampedConstPtr &msg);
+
+  enum PlotOrder { LINEAR_ACCELERATION_BIAS, ANGULAR_VELOCITY_BIAS };
+};
+#endif
 
 #endif  // ROS_PLOTTERS_STATE_MONITOR_H
