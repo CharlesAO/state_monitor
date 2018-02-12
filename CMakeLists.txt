@@ -48,14 +48,15 @@ add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 add_executable(state_monitor_node
   src/state_monitor_node.cpp
 )
-target_link_libraries(state_monitor_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${X11_LIBRARIES} -lmgl)
+target_link_libraries(state_monitor_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${X11_LIBRARIES} -lmgl-fltk)
 
 # Install header files
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
-# Install launch files
-install(DIRECTORY launch/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
-)
+file(COPY state_monitor
+  DESTINATION  ${CATKIN_DEVEL_PREFIX}/bin
+  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+) 
+

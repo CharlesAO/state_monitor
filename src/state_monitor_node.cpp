@@ -4,7 +4,7 @@
 
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "state_plot_node");
+  ros::init(argc, argv, "state_monitor_node");
 
 
   ros::NodeHandle nh;

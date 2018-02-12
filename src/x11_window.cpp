@@ -2,7 +2,7 @@
 
 X11Window::X11Window(const size_t graph_quality, const size_t inital_width,
                      const size_t inital_height) {
-  gr_ = std::make_shared<mglGraph>(0);
+  gr_ = std::make_shared<mglFLTK>();
   // a value of 0 enforces a black background but halves cpu usage
   gr_->SetQuality(graph_quality);
   gr_->Alpha(false);
@@ -63,4 +63,5 @@ void X11Window::resizeAndClear() {
   Status rc = XGetWindowAttributes(display_, window_, &win_attr);
   gr_->SetSize(std::max(win_attr.width - 2 * padding_, 1),
                std::max(win_attr.height - 2 * padding_, 1));
+  gr_->Clf();
 }

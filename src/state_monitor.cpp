@@ -5,7 +5,7 @@ StateMonitor::StateMonitor(const ros::NodeHandle& nh,
   nh_private_.param("plot_time_length_secs", plot_time_length_secs_, 10.0);
 
   draw_timer_ =
-      nh_.createTimer(ros::Duration(0.1), &StateMonitor::drawCallback, this);
+      nh_.createTimer(ros::Duration(0.05), &StateMonitor::drawCallback, this);
 
   node_search_timer_ = nh_.createTimer(ros::Duration(1.0),
                                        &StateMonitor::nodeSearchCallback, this);
