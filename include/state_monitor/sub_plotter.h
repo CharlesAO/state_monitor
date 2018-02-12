@@ -85,7 +85,7 @@ class PlotterData {
 
       data_ptr_offset_ = 0;
       max_data_value_ = std::make_pair(-1, std::numeric_limits<mreal>::min());
-      max_data_value_ = std::make_pair(-1, std::numeric_limits<mreal>::max());
+      min_data_value_ = std::make_pair(-1, std::numeric_limits<mreal>::max());
 
       findMinAndMax();
     }
