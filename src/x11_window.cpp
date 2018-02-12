@@ -37,7 +37,8 @@ void X11Window::render() {
   constexpr int kBitDepth = 24;  // RGB (don't include A here for some reason)
   constexpr int kPixelBitSize = 32;  // RGBA
 
-  // cast away the const because that never goes wrong
+  // cast away the const because that never goes wrong (also note that colors
+  // come out inverted)
   XImage *ximage = XCreateImage(
       display_, visual_, kBitDepth, ZPixmap, 0,
       reinterpret_cast<char *>(const_cast<unsigned char *>(gr_->GetRGBA())),

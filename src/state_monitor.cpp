@@ -116,7 +116,7 @@ void StateMonitor::replaceSubString(const std::string& subject,
 void StateMonitor::printSidebar() {
   std::shared_ptr<mglGraph> gr = x11_window_.getMGLGraph();
 
-  constexpr double kTextStartPos = 1.05;
+  constexpr double kTextStartPos = 1.00;
   constexpr double kTextSize = 5.0;
   constexpr double kLineHeight = 0.05;
 
@@ -127,8 +127,10 @@ void StateMonitor::printSidebar() {
   gr->SubPlot(kNumSubplotsWide, kNumSideBarsHigh, kSideBarIdx, "");
   gr->SetRanges(0, 1, 0, 1);
   mreal text_location = kTextStartPos;
-  gr->Puts(mglPoint(0, text_location), "\\b{State Monitor}", "w:L", kTextSize);
-  text_location -= kLineHeight;
+  gr->Puts(mglPoint(0.5, text_location), "\\b{State Monitor}", "w:C", 2*kTextSize);
+
+  gr->Puts(mglPoint(0,-0.05),"#b{X} #g{Y} #r{Z} #b{Roll} #g{Pitch} #r{Yaw}", "w:L", kTextSize);
+  text_location -= 2*kLineHeight;
   gr->Puts(mglPoint(0, text_location), "Monitored Nodes:", "w:L", kTextSize);
 
   for (auto it = node_plotter_map_.begin(); it != node_plotter_map_.end();
@@ -146,7 +148,7 @@ void StateMonitor::printSidebar() {
 
     text_location -= kLineHeight;
     gr->Puts(mglPoint(0, text_location),
-             ("  \\b{" + text_to_print + "}").c_str(), format.c_str(),
+             ("-> \\b{" + text_to_print + "}").c_str(), format.c_str(),
              kTextSize);
   }
 }
