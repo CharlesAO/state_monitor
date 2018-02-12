@@ -12,8 +12,7 @@ class StateMonitor {
 
   void nodeSearchCallback(const ros::TimerEvent& event);
 
-  // cycle state estimator in focus
-  void cycleFocus(const int key);
+  void processKeyPress(const int key);
 
   static void replaceSubString(const std::string& subject,
                                const std::string& search,

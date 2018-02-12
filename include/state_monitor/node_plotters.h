@@ -9,12 +9,15 @@
 
 class NodePlotter {
  public:
-  NodePlotter(const std::string& topic_base);
+  NodePlotter(const std::string& topic_base, const ros::NodeHandle& nh);
 
   void plot();
 
+  virtual void reset() = 0;
+
  protected:
   const std::string topic_base_;
+  ros::NodeHandle nh_;
 
   std::vector<std::shared_ptr<RosPlotterBase>> plotters_;
 };
@@ -24,6 +27,17 @@ class SWFPlotter : public NodePlotter {
   SWFPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
              const std::shared_ptr<mglGraph>& gr,
              const double keep_data_for_secs);
+
+  void reset();
+};
+
+class RovioPlotter : public NodePlotter {
+ public:
+  RovioPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
+               const std::shared_ptr<mglGraph>& gr,
+               const double keep_data_for_secs);
+
+  void reset();
 };
 
 #ifdef MSF_FOUND
@@ -32,6 +46,8 @@ class MSFPlotter : public NodePlotter {
   MSFPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
              const std::shared_ptr<mglGraph>& gr,
              const double keep_data_for_secs);
+
+  void reset();
 };
 #endif
 

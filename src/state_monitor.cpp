@@ -26,11 +26,21 @@ void StateMonitor::createNodePlotterFromTopicInfo(
     return;
   }
 
+  // Rovio
+  match = topic_info.name.find("extrinsics0");
+  if (match != std::string::npos) {
+    const std::string topic_base = topic_info.name.substr(0, match);
+    node_plotter_map_.emplace(std::make_pair(
+        topic_base, std::make_shared<RovioPlotter>(topic_base, nh_,
+                                                   x11_window_.getMGLGraph(),
+                                                   plot_time_length_secs_)));
+    return;
+  }
+
 // MSF
 #ifdef MSF_FOUND
-  match = topic_info.name.find("state_out");
-  if ((match != std::string::npos) &&
-      (topic_info.datatype == "sensor_fusion_comm/DoubleArrayStamped")) {
+  match = topic_info.name.find("pose_sensor/parameter_updates");
+  if ((match != std::string::npos)) {
     const std::string topic_base = topic_info.name.substr(0, match);
     node_plotter_map_.emplace(std::make_pair(
         topic_base,
@@ -51,8 +61,7 @@ void StateMonitor::nodeSearchCallback(const ros::TimerEvent& event) {
   }
 }
 
-// cycle state estimator in focus
-void StateMonitor::cycleFocus(const int key) {
+void StateMonitor::processKeyPress(const int key) {
   static int prev_key = 0;
   if (key == prev_key) {
     prev_key = key;
@@ -60,20 +69,32 @@ void StateMonitor::cycleFocus(const int key) {
   }
   prev_key = key;
 
-  if (key == 111) {
+  // ROS_ERROR_STREAM("key " << key);
+
+  constexpr int kUp = 111;
+  constexpr int kDown = 116;
+  constexpr int kR = 32;
+
+  // cycle state estimator that is in focus
+  if (key == kDown) {
     auto it = node_plotter_map_.find(node_in_focus_);
     ++it;
     if (it == node_plotter_map_.end()) {
       it = node_plotter_map_.begin();
     }
     node_in_focus_ = it->first;
-  } else if (key == 116) {
+  } else if (key == kUp) {
     auto it = node_plotter_map_.find(node_in_focus_);
     if (it == node_plotter_map_.begin()) {
       it = node_plotter_map_.end();
     }
     --it;
     node_in_focus_ = it->first;
+  }
+  // reset estimator
+  else if (key == kR) {
+    auto it = node_plotter_map_.find(node_in_focus_);
+    it->second->reset();
   }
 }
 
@@ -131,7 +152,7 @@ void StateMonitor::drawCallback(const ros::TimerEvent& event) {
 
   const int key = x11_window_.getKeypress();
 
-  cycleFocus(key);
+  processKeyPress(key);
 
   node_plotter_map_[node_in_focus_]->plot();
 
