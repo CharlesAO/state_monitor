@@ -3,11 +3,14 @@
 StateMonitor::StateMonitor(const ros::NodeHandle& nh,
                            const ros::NodeHandle& nh_private) {
   nh_private_.param("plot_time_length_secs", plot_time_length_secs_, 10.0);
+  double plot_update_rate_hz;
+  nh_private_.param("plot_update_rate_hz", plot_update_rate_hz, 20.0);
 
-  draw_timer_ =
-      nh_.createTimer(ros::Duration(0.05), &StateMonitor::drawCallback, this);
+  draw_timer_ = nh_.createTimer(ros::Duration(1.0 / plot_update_rate_hz),
+                                &StateMonitor::drawCallback, this);
 
-  node_search_timer_ = nh_.createTimer(ros::Duration(1.0),
+  constexpr double kNodeSearchRateHz = 1.0;
+  node_search_timer_ = nh_.createTimer(ros::Duration(1.0 / kNodeSearchRateHz),
                                        &StateMonitor::nodeSearchCallback, this);
 }
 
@@ -112,12 +115,21 @@ void StateMonitor::replaceSubString(const std::string& subject,
 
 void StateMonitor::printSidebar() {
   std::shared_ptr<mglGraph> gr = x11_window_.getMGLGraph();
-  gr->SubPlot(4, 1, 0, "");
+
+  constexpr double kTextStartPos = 1.05;
+  constexpr double kTextSize = 5.0;
+  constexpr double kLineHeight = 0.05;
+
+  constexpr size_t kSideBarIdx = 0;
+  constexpr size_t kNumSubplotsWide = 4;
+  constexpr size_t kNumSideBarsHigh = 1;
+
+  gr->SubPlot(kNumSubplotsWide, kNumSideBarsHigh, kSideBarIdx, "");
   gr->SetRanges(0, 1, 0, 1);
-  mreal text_location = 1.05;
-  gr->Puts(mglPoint(0, text_location), "\\b{State Monitor}", "w:L", 5);
-  text_location -= 0.05;
-  gr->Puts(mglPoint(0, text_location), "Monitored Nodes:", "w:L", 5);
+  mreal text_location = kTextStartPos;
+  gr->Puts(mglPoint(0, text_location), "\\b{State Monitor}", "w:L", kTextSize);
+  text_location -= kLineHeight;
+  gr->Puts(mglPoint(0, text_location), "Monitored Nodes:", "w:L", kTextSize);
 
   for (auto it = node_plotter_map_.begin(); it != node_plotter_map_.end();
        ++it) {
@@ -132,9 +144,10 @@ void StateMonitor::printSidebar() {
       format = "w:L";
     }
 
-    text_location -= 0.05;
+    text_location -= kLineHeight;
     gr->Puts(mglPoint(0, text_location),
-             ("  \\b{" + text_to_print + "}").c_str(), format.c_str(), 5);
+             ("  \\b{" + text_to_print + "}").c_str(), format.c_str(),
+             kTextSize);
   }
 }
 

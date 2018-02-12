@@ -191,7 +191,9 @@ class SubPlotter {
     plotter_data_.getMGLData(&mgl_time_data, &mgl_variable_data);
 
     gr_->SubPlot(num_subplots_wide_, num_subplots_high_, subplot_idx_, "");
+    gr_->SetFontSizePT(5);
     gr_->Title(title_.c_str(), "w");
+    gr_->SetFontSizePT(10);
     gr_->SetOrigin(NAN, NAN);
     gr_->Axis("y", "w");
 

@@ -9,8 +9,7 @@
 
 class X11Window {
  public:
-  X11Window(const size_t graph_quality = 0, const size_t inital_width = 1000,
-            const size_t inital_height = 500);
+  X11Window(const size_t graph_quality = 0);
 
   void render();
 
@@ -24,12 +23,12 @@ class X11Window {
   Display *display_;
   Window window_;
   Visual *visual_;
-  int screen_;
   GC gc_;
 
   std::shared_ptr<mglGraph> gr_;
 
-  static constexpr int padding_ = 10;
+  static constexpr int kPadding = 10;
+  static constexpr double kStartingScreenRatio = 0.7;
 };
 
 #endif  // X11_WINDOW_STATE_MONITOR_H

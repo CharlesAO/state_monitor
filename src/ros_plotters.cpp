@@ -171,10 +171,21 @@ MSFStatePlotter::MSFStatePlotter(
 void MSFStatePlotter::callback(
     const sensor_fusion_comm::DoubleArrayStampedConstPtr &msg) {
   const double t = msg->header.stamp.toSec();
+
+  constexpr size_t kAngularVelocityXBiasIdx = 10;
+  constexpr size_t kAngularVelocityYBiasIdx = 11;
+  constexpr size_t kAngularVelocityZBiasIdx = 12;
+  constexpr size_t kLinearAccelerationXBiasIdx = 13;
+  constexpr size_t kLinearAccelerationYBiasIdx = 14;
+  constexpr size_t kLinearAccelerationZBiasIdx = 15;
+
+  sub_plots_[ANGULAR_VELOCITY_BIAS].addDataPoint(
+      t, msg->data[kAngularVelocityXBiasIdx],
+      msg->data[kAngularVelocityYBiasIdx], msg->data[kAngularVelocityZBiasIdx]);
   sub_plots_[LINEAR_ACCELERATION_BIAS].addDataPoint(
-      t, msg->data[13], msg->data[14], msg->data[15]);
-  sub_plots_[ANGULAR_VELOCITY_BIAS].addDataPoint(t, msg->data[10],
-                                                 msg->data[11], msg->data[12]);
+      t, msg->data[kLinearAccelerationXBiasIdx],
+      msg->data[kLinearAccelerationYBiasIdx],
+      msg->data[kLinearAccelerationZBiasIdx]);
 }
 
 #endif
