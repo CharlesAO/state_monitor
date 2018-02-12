@@ -28,6 +28,7 @@ class PlotterData {
 
   void getMGLData(mglData *mgl_time_data,
                   std::array<mglData, data_dim_> *mgl_variable_data) {
+
     mgl_time_data->Link(&(time_data_[data_ptr_offset_]),
                         time_data_.size() - data_ptr_offset_);
 
@@ -38,20 +39,20 @@ class PlotterData {
     }
   }
 
-  size_t getNumDataPoints() { return time_data_.size(); }
+  size_t getNumDataPoints() const { return time_data_.size(); }
 
-  double getMaxDataValue() { return max_data_value_.second; }
+  double getMaxDataValue() const { return max_data_value_.second; }
 
-  double getMinDataValue() { return min_data_value_.second; }
+  double getMinDataValue() const { return min_data_value_.second; }
 
-  double getMaxTimeValue() {
+  double getMaxTimeValue() const {
     if (time_data_.size() == 0) {
       return 0;
     }
     return time_data_.back();
   }
 
-  double getMinTimeValue() {
+  double getMinTimeValue() const {
     if (time_data_.size() == 0) {
       return 0;
     }
@@ -72,13 +73,21 @@ class PlotterData {
     // check if a bag has looped (new reading is from a long way in the past)
     if ((time_data_.size() > 1) &&
         ((time_data_.back() + keep_data_for_secs_) < time_data_.rbegin()[1])) {
-      time_data_.erase(time_data_.begin(), time_data_.end() - 1);
+      mreal temp = time_data_.back();
+      time_data_.clear();
+      time_data_.push_back(temp);
+
       for (std::vector<mreal> &element_data : variable_data_) {
-        element_data.erase(element_data.begin(), element_data.end() - 1);
+        temp = element_data.back();
+        element_data.clear();
+        element_data.push_back(temp);
       }
+
       data_ptr_offset_ = 0;
       max_data_value_ = std::make_pair(-1, std::numeric_limits<mreal>::min());
       max_data_value_ = std::make_pair(-1, std::numeric_limits<mreal>::max());
+
+      findMinAndMax();
     }
 
     // move data ptr to keep only keep_data_for_secs data in range
@@ -176,7 +185,7 @@ class SubPlotter {
     plotter_data_.addDataPoint(time_secs, args...);
   }
 
-  void plot() {
+  void plot() const {
     mglData mgl_time_data;
     std::array<mglData, data_dim_> mgl_variable_data;
     plotter_data_.getMGLData(&mgl_time_data, &mgl_variable_data);
@@ -199,7 +208,8 @@ class SubPlotter {
 
  private:
   std::shared_ptr<mglGraph> gr_;
-  PlotterData<data_dim_> plotter_data_;
+  //mathgl does not beleive in const methods, hence the mutable
+  mutable PlotterData<data_dim_> plotter_data_;
 
   const std::string title_;
   const size_t num_subplots_wide_;

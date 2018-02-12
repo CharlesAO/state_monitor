@@ -10,13 +10,23 @@ include_directories(${X11_INCLUDE_DIR})
 
 add_definitions(-std=gnu++11 -o3)
 
+#############
+# LIBRARIES #
+#############
+cs_add_library(${PROJECT_NAME}
+  src/x11_window.cpp
+  src/ros_plotters.cpp
+  src/node_plotters.cpp
+  src/state_monitor.cpp
+)
+
 ############
 # BINARIES #
 ############
 cs_add_executable(state_monitor_node
   src/state_monitor_node.cpp
 )
-target_link_libraries(state_monitor_node ${X11_LIBRARIES} -lmgl)
+target_link_libraries(state_monitor_node ${PROJECT_NAME} ${X11_LIBRARIES} -lmgl)
 
 ##########
 # EXPORT #

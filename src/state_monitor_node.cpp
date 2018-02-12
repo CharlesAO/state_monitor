@@ -1,6 +1,6 @@
 #include <ros/ros.h>
 
-#include "state_monitor/node_plotters.h"
+#include "state_monitor/state_monitor.h"
 
 
 int main(int argc, char **argv) {
@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
   ros::NodeHandle nh;
   ros::NodeHandle nh_private("~");
 
-  PlotManager plot_manager(nh, nh_private);
+  StateMonitor state_monitor(nh, nh_private);
 
   ros::spin();
 
