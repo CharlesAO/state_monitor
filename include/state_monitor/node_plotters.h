@@ -60,4 +60,15 @@ class MSFPlotter : public NodePlotter {
 };
 #endif
 
+#ifdef MAV_CONTROL_RW_FOUND
+class MAVControlRWPlotter : public NodePlotter {
+ public:
+  MAVControlRWPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
+             const std::shared_ptr<mglGraph>& gr,
+             const double keep_data_for_secs);
+
+  void reset(){}
+};
+#endif
+
 #endif  // NODE_PLOTTERS_STATE_MONITOR_H

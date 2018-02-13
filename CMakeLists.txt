@@ -21,7 +21,18 @@ IF(${sensor_fusion_comm_FOUND})
     ${sensor_fusion_comm_INCLUDE_DIRS}
   )
 ELSE()
-  MESSAGE(WARNING "sensor_fusion_comm_FOUND found, building with MSF support")
+  MESSAGE(WARNING "sensor_fusion_comm not found, building without MSF support")
+ENDIF()
+
+find_package(mav_disturbance_observer)
+IF(${mav_disturbance_observer_FOUND})
+  add_definitions(-DMAV_CONTROL_RW_FOUND)
+
+  include_directories(
+    ${mav_disturbance_observer_INCLUDE_DIRS}
+  )
+ELSE()
+  MESSAGE(WARNING "mav_disturbance_observer not found, building without mav_control_rw support")
 ENDIF()
 
 catkin_package(
@@ -35,7 +46,7 @@ include_directories(
   ${X11_INCLUDE_DIR}
 )
 
-add_definitions(-std=gnu++11 -o3)
+add_definitions(-std=gnu++11 -o3 -fext-numeric-literals)
 
 add_library(${PROJECT_NAME}
   src/x11_window.cpp
@@ -58,5 +69,5 @@ install(DIRECTORY include/${PROJECT_NAME}/
 file(COPY state_monitor
   DESTINATION  ${CATKIN_DEVEL_PREFIX}/bin
   FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-) 
+)
 

@@ -162,3 +162,30 @@ void MSFPlotter::reset() {
   }
 }
 #endif
+
+#ifdef MAV_CONTROL_RW_FOUND
+MAVControlRWPlotter::MAVControlRWPlotter(const std::string& topic_base,
+                                         const ros::NodeHandle& nh,
+                                         const std::shared_ptr<mglGraph>& gr,
+                                         const double keep_data_for_secs)
+    : NodePlotter(topic_base, nh) {
+  constexpr size_t kNumSubplotsWide = 4;
+  constexpr size_t kNumSubplotsHigh = 3;
+
+  constexpr size_t kPositionPlotIdx = 1;
+  constexpr size_t kLinearVelocityPlotIdx = 2;
+  constexpr size_t kExternalForcesPlotIdx = 3;
+  constexpr size_t kOrientationPlotIdx = 5;
+  constexpr size_t kAngularVelocityPlotIdx = 6;
+  constexpr size_t kExternalMomentsPlotIdx = 7;
+  constexpr size_t kForceOffsetPlotIdx = 9;
+  constexpr size_t kMomentOffsetPlotIdx = 10;
+
+  plotters_.push_back(std::make_shared<ObserverStatePlotter>(
+      nh_, topic_base + "KF_observer/observer_state", gr, keep_data_for_secs,
+      kNumSubplotsWide, kNumSubplotsHigh, kPositionPlotIdx,
+      kLinearVelocityPlotIdx, kExternalForcesPlotIdx, kOrientationPlotIdx,
+      kAngularVelocityPlotIdx, kExternalMomentsPlotIdx, kForceOffsetPlotIdx,
+      kMomentOffsetPlotIdx));
+}
+#endif
