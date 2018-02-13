@@ -1,0 +1,10 @@
+#!/bin/bash
+
+ROS_RUNNING=$(rostopic list | head -c1)
+
+if [ $ROS_RUNNING == "/" ]
+then
+  rosrun state_monitor state_monitor_node
+else
+  echo "No roscore found, could not start state monitor."
+fi
