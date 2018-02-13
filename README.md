@@ -1,6 +1,8 @@
 # State Monitor
 A simple GUI for monitoring the state of a range of ASL estimators
 
+![pretty_gif](https://i.imgur.com/4sv2Ofa.gif)
+
 # Dependencies
 
 State Monitor depends on mathgl and X11. These can be installed via `sudo apt install libmgl-dev libx11-dev`
