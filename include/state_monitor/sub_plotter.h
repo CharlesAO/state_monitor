@@ -193,7 +193,7 @@ class SubPlotter {
 
     if (plotter_data_.getNumDataPoints() > 0) {
       constexpr mreal kRangePad = 1e-4;
-      constexpr mreal kPadAxes = 1.05;
+      constexpr mreal kPadAxes = 0.5;
       mreal min_data_value = plotter_data_.getMinDataValue();
       mreal max_data_value = plotter_data_.getMaxDataValue();
       const mreal range = max_data_value - min_data_value + kRangePad;
