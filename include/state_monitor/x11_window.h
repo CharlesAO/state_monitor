@@ -4,6 +4,7 @@
 #include <memory>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
+#include <X11/XKBlib.h>
 #include <mgl2/mgl.h>
 #include <mgl2/fltk.h>
 
@@ -13,7 +14,7 @@ class X11Window {
 
   void render();
 
-  int getKeypress();
+  KeySym getKeypress();
 
   std::shared_ptr<mglGraph> getMGLGraph() const;
 

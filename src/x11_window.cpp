@@ -49,12 +49,19 @@ void X11Window::render() {
   XFlush(display_);
 }
 
-int X11Window::getKeypress() {
-  int key_pressed = 0;
+KeySym X11Window::getKeypress() {
   XEvent event;
+
+  if(!XCheckMaskEvent(display_, KeyPressMask, &event)){
+    return XK_VoidSymbol;
+  }
   while (XCheckMaskEvent(display_, KeyPressMask, &event))
     ;
-  return event.xkey.keycode;
+
+  KeySym key_pressed = XkbKeycodeToKeysym( display_, event.xkey.keycode, 
+                                0, event.xkey.state & ShiftMask ? 1 : 0);
+
+  return key_pressed;
 }
 
 std::shared_ptr<mglGraph> X11Window::getMGLGraph() const { return gr_; }
