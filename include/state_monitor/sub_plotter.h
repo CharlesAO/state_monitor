@@ -28,14 +28,13 @@ class PlotterData {
 
   void getMGLData(mglData *mgl_time_data,
                   std::array<mglData, data_dim_> *mgl_variable_data) {
-
     mgl_time_data->Link(&(time_data_[data_ptr_offset_]),
                         time_data_.size() - data_ptr_offset_);
 
     for (size_t i = 0; i < data_dim_; ++i) {
-      mgl_variable_data->at(i).Link(
-          &(variable_data_[i][data_ptr_offset_]),
-          variable_data_[i].size() - data_ptr_offset_);
+      mgl_variable_data->at(i)
+          .Link(&(variable_data_[i][data_ptr_offset_]),
+                variable_data_[i].size() - data_ptr_offset_);
     }
   }
 
@@ -120,11 +119,11 @@ class PlotterData {
 
     // find new min and max values
     for (const std::vector<mreal> &element_data : variable_data_) {
-      if (max_data_value_.second < element_data.back()) {
+      if (max_data_value_.second <= element_data.back()) {
         max_data_value_ =
             std::make_pair(element_data.size() - 1, element_data.back());
       }
-      if (min_data_value_.second > element_data.back()) {
+      if (min_data_value_.second >= element_data.back()) {
         min_data_value_ =
             std::make_pair(element_data.size() - 1, element_data.back());
       }
@@ -191,12 +190,6 @@ class SubPlotter {
     plotter_data_.getMGLData(&mgl_time_data, &mgl_variable_data);
 
     gr_->SubPlot(num_subplots_wide_, num_subplots_high_, subplot_idx_, "");
-    gr_->SetFontSizePT(5);
-    gr_->Title(title_.c_str(), "w");
-    gr_->SetFontSizePT(10);
-    gr_->SetOrigin(NAN, NAN);
-    gr_->Axis("y", "w");
-
 
     if (plotter_data_.getNumDataPoints() > 0) {
       gr_->SetRanges(
@@ -206,11 +199,17 @@ class SubPlotter {
         gr_->Plot(mgl_time_data, mgl_element_data, "-");
       }
     }
+
+    gr_->SetFontSizePT(5);
+    gr_->Title(title_.c_str(), "w");
+    gr_->SetFontSizePT(10);
+    gr_->SetOrigin(NAN, NAN);
+    gr_->Axis("y", "w");
   }
 
  private:
   std::shared_ptr<mglGraph> gr_;
-  //mathgl does not beleive in const methods, hence the mutable
+  // mathgl does not beleive in const methods, hence the mutable
   mutable PlotterData<data_dim_> plotter_data_;
 
   const std::string title_;
@@ -219,4 +218,4 @@ class SubPlotter {
   const size_t subplot_idx_;
 };
 
-#endif //SUB_PLOTTER_STATE_MONITOR_H
+#endif  // SUB_PLOTTER_STATE_MONITOR_H

@@ -95,6 +95,29 @@ void RovioPlotter::reset() {
   }
 }
 
+MavrosPlotter::MavrosPlotter(const std::string& topic_base,
+                             const ros::NodeHandle& nh,
+                             const std::shared_ptr<mglGraph>& gr,
+                             const double keep_data_for_secs)
+    : NodePlotter(topic_base, nh) {
+  constexpr size_t kNumSubplotsWide = 4;
+  constexpr size_t kNumSubplotsHigh = 2;
+
+  constexpr size_t kLinearAccelerationPlotIdx = 1;
+  constexpr size_t kOrientationPlotIdx = 2;
+  constexpr size_t kAngularVelocityPlotIdx = 3;
+  constexpr size_t kRadioPlotIdx = 5;
+
+  plotters_.push_back(std::make_shared<ImuPlotter>(
+      nh_, topic_base + "imu/data", gr, keep_data_for_secs, kNumSubplotsWide,
+      kNumSubplotsHigh, kLinearAccelerationPlotIdx, kOrientationPlotIdx,
+      kAngularVelocityPlotIdx));
+
+  plotters_.push_back(std::make_shared<JoyPlotter>(
+      nh_, topic_base + "rc/in", gr, keep_data_for_secs, kNumSubplotsWide,
+      kNumSubplotsHigh, kRadioPlotIdx));
+}
+
 #ifdef MSF_FOUND
 MSFPlotter::MSFPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
                        const std::shared_ptr<mglGraph>& gr,

@@ -155,6 +155,22 @@ void ImuBiasPlotter::callback(const sensor_msgs::ImuConstPtr &msg) {
                                                  msg->angular_velocity.z);
 }
 
+JoyPlotter::JoyPlotter(const ros::NodeHandle &nh, const std::string &topic,
+                       const std::shared_ptr<mglGraph> &gr,
+                       const double keep_data_for_secs,
+                       const size_t num_subplots_wide,
+                       const size_t num_subplots_high,
+                       const size_t joy_subplot_idx)
+    : RosPlotter(nh, topic, gr, keep_data_for_secs, num_subplots_wide,
+                 num_subplots_high, {"Joystick inputs"}, {joy_subplot_idx}) {}
+
+void JoyPlotter::callback(const sensor_msgs::JoyConstPtr &msg) {
+  const double t = msg->header.stamp.toSec();
+
+  sub_plots_.back().addDataPoint(t, msg->axes[0], msg->axes[1], msg->axes[2],
+                                 msg->axes[3], msg->axes[4], msg->axes[5]);
+}
+
 #ifdef MSF_FOUND
 MSFStatePlotter::MSFStatePlotter(
     const ros::NodeHandle &nh, const std::string &topic,

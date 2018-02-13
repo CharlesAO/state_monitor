@@ -7,6 +7,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
+#include <sensor_msgs/Joy.h>
 
 #ifdef MSF_FOUND
 #include <sensor_fusion_comm/DoubleArrayStamped.h>
@@ -154,6 +155,18 @@ class ImuBiasPlotter : public RosPlotter<sensor_msgs::ImuConstPtr, 2, 3> {
   void callback(const sensor_msgs::ImuConstPtr &msg);
 
   enum PlotOrder { LINEAR_ACCELERATION_BIAS, ANGULAR_VELOCITY_BIAS };
+};
+
+class JoyPlotter : public RosPlotter<sensor_msgs::JoyConstPtr, 1, 6> {
+ public:
+  JoyPlotter(const ros::NodeHandle &nh, const std::string &topic,
+             const std::shared_ptr<mglGraph> &gr,
+             const double keep_data_for_secs, const size_t num_subplots_wide,
+             const size_t num_subplots_high,
+             const size_t joy_subplot_idx);
+
+ private:
+  void callback(const sensor_msgs::JoyConstPtr &msg);
 };
 
 #ifdef MSF_FOUND
