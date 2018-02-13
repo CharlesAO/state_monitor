@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   sensor_msgs
   geometry_msgs
+  trajectory_msgs
 )
 
 find_package(sensor_fusion_comm)

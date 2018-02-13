@@ -192,9 +192,18 @@ class SubPlotter {
     gr_->SubPlot(num_subplots_wide_, num_subplots_high_, subplot_idx_, "");
 
     if (plotter_data_.getNumDataPoints() > 0) {
+      constexpr mreal kRangePad = 1e-4;
+      constexpr mreal kPadAxes = 1.05;
+      mreal min_data_value = plotter_data_.getMinDataValue();
+      mreal max_data_value = plotter_data_.getMaxDataValue();
+      const mreal range = max_data_value - min_data_value + kRangePad;
+      min_data_value = min_data_value - kPadAxes*range;
+      max_data_value = max_data_value + kPadAxes*range;
+
       gr_->SetRanges(
           plotter_data_.getMinTimeValue(), plotter_data_.getMaxTimeValue(),
-          plotter_data_.getMinDataValue(), plotter_data_.getMaxDataValue());
+          min_data_value, max_data_value);
+
       for (mglData &mgl_element_data : mgl_variable_data) {
         gr_->Plot(mgl_time_data, mgl_element_data, "-");
       }

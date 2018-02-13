@@ -170,16 +170,23 @@ MAVControlRWPlotter::MAVControlRWPlotter(const std::string& topic_base,
                                          const double keep_data_for_secs)
     : NodePlotter(topic_base, nh) {
   constexpr size_t kNumSubplotsWide = 4;
-  constexpr size_t kNumSubplotsHigh = 3;
+  constexpr size_t kNumSubplotsHigh = 4;
 
   constexpr size_t kPositionPlotIdx = 1;
-  constexpr size_t kLinearVelocityPlotIdx = 2;
-  constexpr size_t kExternalForcesPlotIdx = 3;
+  constexpr size_t kRefPositionPlotIdx = 2;
+  constexpr size_t kLinearVelocityPlotIdx = 3;
+
   constexpr size_t kOrientationPlotIdx = 5;
-  constexpr size_t kAngularVelocityPlotIdx = 6;
-  constexpr size_t kExternalMomentsPlotIdx = 7;
-  constexpr size_t kForceOffsetPlotIdx = 9;
-  constexpr size_t kMomentOffsetPlotIdx = 10;
+  constexpr size_t kRefOrientationPlotIdx = 6;
+  constexpr size_t kAngularVelocityPlotIdx = 7;
+
+  constexpr size_t kExternalForcesPlotIdx = 9;
+  constexpr size_t kExternalMomentsPlotIdx = 10;
+  constexpr size_t kForceOffsetPlotIdx = 11;
+
+  constexpr size_t kMomentOffsetPlotIdx = 13;
+  constexpr size_t kRPYRatePlotIdx = 14;
+  constexpr size_t kThrustPlotIdx = 15;
 
   plotters_.push_back(std::make_shared<ObserverStatePlotter>(
       nh_, topic_base + "KF_observer/observer_state", gr, keep_data_for_secs,
@@ -187,5 +194,20 @@ MAVControlRWPlotter::MAVControlRWPlotter(const std::string& topic_base,
       kLinearVelocityPlotIdx, kExternalForcesPlotIdx, kOrientationPlotIdx,
       kAngularVelocityPlotIdx, kExternalMomentsPlotIdx, kForceOffsetPlotIdx,
       kMomentOffsetPlotIdx));
+
+  // same topic naming issues as msf
+  size_t last_char = topic_base.rfind('/', topic_base.size() - 2);
+  std::string core_base = topic_base.substr(0, last_char);
+
+  plotters_.push_back(std::make_shared<TrajectoryPlotter>(
+      nh_, core_base + "/command/current_reference", gr, keep_data_for_secs,
+      kNumSubplotsWide, kNumSubplotsHigh, kRefPositionPlotIdx,
+      kRefOrientationPlotIdx));
+
+  // todo fix this
+  plotters_.push_back(std::make_shared<RPYRateThrustPlotter>(
+      nh_, core_base + "/mavros/setpoint_raw/roll_pitch_yawrate_thrust", gr,
+      keep_data_for_secs, kNumSubplotsWide, kNumSubplotsHigh, kRPYRatePlotIdx,
+      kThrustPlotIdx));
 }
 #endif

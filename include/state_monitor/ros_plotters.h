@@ -8,6 +8,7 @@
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/Joy.h>
+#include <trajectory_msgs/MultiDOFJointTrajectory.h>
 
 #ifdef MSF_FOUND
 #include <sensor_fusion_comm/DoubleArrayStamped.h>
@@ -15,6 +16,7 @@
 
 #ifdef MAV_CONTROL_RW_FOUND
 #include <mav_disturbance_observer/ObserverState.h>
+#include <mav_msgs/RollPitchYawrateThrust.h>
 #endif
 
 #include "state_monitor/sub_plotter.h"
@@ -172,6 +174,24 @@ class JoyPlotter : public RosPlotter<sensor_msgs::JoyConstPtr, 1, 6> {
   void callback(const sensor_msgs::JoyConstPtr &msg);
 };
 
+class TrajectoryPlotter
+    : public RosPlotter<trajectory_msgs::MultiDOFJointTrajectoryConstPtr, 2,
+                        3> {
+ public:
+  TrajectoryPlotter(const ros::NodeHandle &nh, const std::string &topic,
+                    const std::shared_ptr<mglGraph> &gr,
+                    const double keep_data_for_secs,
+                    const size_t num_subplots_wide,
+                    const size_t num_subplots_high,
+                    const size_t position_subplot_idx,
+                    const size_t orientation_subplot_idx);
+
+ private:
+  void callback(const trajectory_msgs::MultiDOFJointTrajectoryConstPtr &msg);
+
+  enum PlotOrder { POSITION, ORIENTATION };
+};
+
 #ifdef MSF_FOUND
 class MSFStatePlotter
     : public RosPlotter<sensor_fusion_comm::DoubleArrayStampedConstPtr, 2, 3> {
@@ -222,6 +242,23 @@ class ObserverStatePlotter
     FORCES_OFFSET,
     MOMENTS_OFFSET
   };
+};
+
+class RPYRateThrustPlotter
+    : public RosPlotter<mav_msgs::RollPitchYawrateThrustConstPtr, 2, 3> {
+ public:
+  RPYRateThrustPlotter(const ros::NodeHandle &nh, const std::string &topic,
+                       const std::shared_ptr<mglGraph> &gr,
+                       const double keep_data_for_secs,
+                       const size_t num_subplots_wide,
+                       const size_t num_subplots_high,
+                       const size_t rpy_rate_subplot_idx,
+                       const size_t thrust_idx);
+
+ private:
+  void callback(const mav_msgs::RollPitchYawrateThrustConstPtr &msg);
+
+  enum PlotOrder { RPY_RATE, THRUST };
 };
 #endif
 
