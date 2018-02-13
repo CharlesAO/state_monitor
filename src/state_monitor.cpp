@@ -113,7 +113,7 @@ void StateMonitor::processKeyPress(const KeySym key) {
     node_in_focus_ = it->first;
   }
   // reset estimator
-  else if (key == XK_R) {
+  else if (key == XK_r) {
     auto it = node_plotter_map_.find(node_in_focus_);
     it->second->reset();
   }
