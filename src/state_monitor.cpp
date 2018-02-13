@@ -40,6 +40,17 @@ void StateMonitor::createNodePlotterFromTopicInfo(
     return;
   }
 
+  // Mavros
+  match = topic_info.name.find("vfr_hud");
+  if (match != std::string::npos) {
+    const std::string topic_base = topic_info.name.substr(0, match);
+    node_plotter_map_.emplace(std::make_pair(
+        topic_base, std::make_shared<MavrosPlotter>(topic_base, nh_,
+                                                    x11_window_.getMGLGraph(),
+                                                    plot_time_length_secs_)));
+    return;
+  }
+
 // MSF
 #ifdef MSF_FOUND
   match = topic_info.name.find("pose_sensor/parameter_updates");
@@ -49,6 +60,19 @@ void StateMonitor::createNodePlotterFromTopicInfo(
         topic_base,
         std::make_shared<MSFPlotter>(topic_base, nh_, x11_window_.getMGLGraph(),
                                      plot_time_length_secs_)));
+    return;
+  }
+#endif
+
+// MAV Control RW
+#ifdef MAV_CONTROL_RW_FOUND
+  match = topic_info.name.find("KF_observer/observer_state");
+  if ((match != std::string::npos)) {
+    const std::string topic_base = topic_info.name.substr(0, match);
+    node_plotter_map_.emplace(std::make_pair(
+        topic_base, std::make_shared<MAVControlRWPlotter>(
+                        topic_base, nh_, x11_window_.getMGLGraph(),
+                        plot_time_length_secs_)));
     return;
   }
 #endif
@@ -64,29 +88,23 @@ void StateMonitor::nodeSearchCallback(const ros::TimerEvent& event) {
   }
 }
 
-void StateMonitor::processKeyPress(const int key) {
-  static int prev_key = 0;
+void StateMonitor::processKeyPress(const KeySym key) {
+  static KeySym prev_key = XK_VoidSymbol;
   if (key == prev_key) {
     prev_key = key;
     return;
   }
   prev_key = key;
 
-  // ROS_ERROR_STREAM("key " << key);
-
-  constexpr int kUp = 111;
-  constexpr int kDown = 116;
-  constexpr int kR = 32;
-
   // cycle state estimator that is in focus
-  if (key == kDown) {
+  if (key == XK_Down) {
     auto it = node_plotter_map_.find(node_in_focus_);
     ++it;
     if (it == node_plotter_map_.end()) {
       it = node_plotter_map_.begin();
     }
     node_in_focus_ = it->first;
-  } else if (key == kUp) {
+  } else if (key == XK_Up) {
     auto it = node_plotter_map_.find(node_in_focus_);
     if (it == node_plotter_map_.begin()) {
       it = node_plotter_map_.end();
@@ -95,9 +113,12 @@ void StateMonitor::processKeyPress(const int key) {
     node_in_focus_ = it->first;
   }
   // reset estimator
-  else if (key == kR) {
+  else if (key == XK_R) {
     auto it = node_plotter_map_.find(node_in_focus_);
     it->second->reset();
+  }
+  else if (key == XK_Escape) {
+    exit(1);
   }
 }
 
@@ -165,7 +186,7 @@ void StateMonitor::drawCallback(const ros::TimerEvent& event) {
     }
   }
 
-  const int key = x11_window_.getKeypress();
+  const KeySym key = x11_window_.getKeypress();
 
   processKeyPress(key);
 

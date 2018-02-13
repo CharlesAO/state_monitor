@@ -12,7 +12,7 @@ class StateMonitor {
 
   void nodeSearchCallback(const ros::TimerEvent& event);
 
-  void processKeyPress(const int key);
+  void processKeyPress(const KeySym key);
 
   static void replaceSubString(const std::string& subject,
                                const std::string& search,

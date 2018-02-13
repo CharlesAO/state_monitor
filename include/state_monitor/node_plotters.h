@@ -40,6 +40,15 @@ class RovioPlotter : public NodePlotter {
   void reset();
 };
 
+class MavrosPlotter : public NodePlotter {
+ public:
+  MavrosPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
+               const std::shared_ptr<mglGraph>& gr,
+               const double keep_data_for_secs);
+
+  void reset(){}
+};
+
 #ifdef MSF_FOUND
 class MSFPlotter : public NodePlotter {
  public:
@@ -48,6 +57,17 @@ class MSFPlotter : public NodePlotter {
              const double keep_data_for_secs);
 
   void reset();
+};
+#endif
+
+#ifdef MAV_CONTROL_RW_FOUND
+class MAVControlRWPlotter : public NodePlotter {
+ public:
+  MAVControlRWPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
+             const std::shared_ptr<mglGraph>& gr,
+             const double keep_data_for_secs);
+
+  void reset(){}
 };
 #endif
 

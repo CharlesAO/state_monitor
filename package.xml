@@ -17,6 +17,7 @@
   <depend>nav_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>trajectory_msgs</depend>
   <depend>sensor_fusion_comm</depend>
-
+  <depend>mav_disturbance_observer</depend>
 </package>
