@@ -204,9 +204,8 @@ MAVControlRWPlotter::MAVControlRWPlotter(const std::string& topic_base,
       kNumSubplotsWide, kNumSubplotsHigh, kRefPositionPlotIdx,
       kRefOrientationPlotIdx));
 
-  // todo fix this
   plotters_.push_back(std::make_shared<RPYRateThrustPlotter>(
-      nh_, core_base + "/mavros/setpoint_raw/roll_pitch_yawrate_thrust", gr,
+      nh_, core_base + "/command/roll_pitch_yawrate_thrust", gr,
       keep_data_for_secs, kNumSubplotsWide, kNumSubplotsHigh, kRPYRatePlotIdx,
       kThrustPlotIdx));
 }
