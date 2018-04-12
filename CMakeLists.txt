@@ -47,7 +47,7 @@ include_directories(
   ${X11_INCLUDE_DIR}
 )
 
-add_definitions(-std=gnu++11 -o3 -fext-numeric-literals)
+add_definitions(-std=gnu++11 -Ofast -march=native -fext-numeric-literals)
 
 add_library(${PROJECT_NAME}
   src/x11_window.cpp
@@ -60,7 +60,7 @@ add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 add_executable(state_monitor_node
   src/state_monitor_node.cpp
 )
-target_link_libraries(state_monitor_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${X11_LIBRARIES} -lmgl-fltk)
+target_link_libraries(state_monitor_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${X11_LIBRARIES} -lmgl)
 
 # Install header files
 install(DIRECTORY include/${PROJECT_NAME}/

@@ -5,7 +5,7 @@ A simple GUI for monitoring the state of a range of ASL estimators
 
 # Dependencies
 
-State Monitor depends on mathgl and X11. These can be installed via `sudo apt install libmgl-dev libx11-dev`
+State Monitor depends on mathgl and X11. To stop runaway cpu usage it also needs numactl. These can be installed via `sudo apt install libmgl-dev libx11-dev numactl`
 
 # Usage
 
