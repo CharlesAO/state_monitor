@@ -10,7 +10,7 @@
 
 class X11Window {
  public:
-  X11Window(const size_t graph_quality = 0);
+  X11Window(const size_t graph_quality = 4);
 
   void render();
 

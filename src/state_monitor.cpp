@@ -4,7 +4,7 @@ StateMonitor::StateMonitor(const ros::NodeHandle& nh,
                            const ros::NodeHandle& nh_private) {
   nh_private_.param("plot_time_length_secs", plot_time_length_secs_, 10.0);
   double plot_update_rate_hz;
-  nh_private_.param("plot_update_rate_hz", plot_update_rate_hz, 20.0);
+  nh_private_.param("plot_update_rate_hz", plot_update_rate_hz, 5.0);
 
   draw_timer_ = nh_.createTimer(ros::Duration(1.0 / plot_update_rate_hz),
                                 &StateMonitor::drawCallback, this);
