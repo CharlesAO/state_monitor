@@ -1,6 +1,7 @@
 #include "state_monitor/x11_window.h"
 
 X11Window::X11Window(const size_t graph_quality) {
+
   gr_ = std::make_shared<mglGraph>();
   // a value of 0 enforces a black background but halves cpu usage
   gr_->SetQuality(graph_quality);
