@@ -60,7 +60,7 @@ add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 add_executable(state_monitor_node
   src/state_monitor_node.cpp
 )
-target_link_libraries(state_monitor_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${X11_LIBRARIES} -lmgl-fltk)
+target_link_libraries(state_monitor_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${X11_LIBRARIES} -lmgl-fltk -lmgl-glut -lmgl-qt -lmgl)
 
 # Install header files
 install(DIRECTORY include/${PROJECT_NAME}/

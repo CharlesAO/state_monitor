@@ -1,11 +1,12 @@
 #include "state_monitor/x11_window.h"
+#include <iostream>
 
 X11Window::X11Window(const size_t graph_quality) {
-  gr_ = std::make_shared<mglFLTK>();
+  gr_ = std::make_shared<mglGraph>();
   // a value of 0 enforces a black background but halves cpu usage
-  gr_->SetQuality(graph_quality);
-  gr_->Alpha(false);
-  gr_->Light(false);
+  gr_->SetQuality(0);
+  //gr_->Alpha(false);
+  //gr_->Light(false);
   gr_->LoadFont("chorus");
 
   display_ = XOpenDisplay(NULL);
@@ -34,12 +35,13 @@ X11Window::X11Window(const size_t graph_quality) {
 }
 
 void X11Window::render() {
+
   constexpr int kBitDepth = 24;  // RGB (don't include A here for some reason)
   constexpr int kPixelBitSize = 32;  // RGBA
 
   // cast away the const because that never goes wrong (also note that colors
   // come out inverted)
-  XImage *ximage = XCreateImage(
+  /*XImage *ximage = XCreateImage(
       display_, visual_, kBitDepth, ZPixmap, 0,
       reinterpret_cast<char *>(const_cast<unsigned char *>(gr_->GetRGBA())),
       gr_->GetWidth(), gr_->GetHeight(), kPixelBitSize, 0);
@@ -48,6 +50,9 @@ void X11Window::render() {
             gr_->GetWidth(), gr_->GetHeight());
 
   XFlush(display_);
+*/
+  std::cerr <<"RUNNING" <<std::endl;
+  gr_->WriteFrame("test.json");
 }
 
 KeySym X11Window::getKeypress() {
@@ -71,7 +76,7 @@ void X11Window::resizeAndClear() {
   XWindowAttributes win_attr;
 
   Status rc = XGetWindowAttributes(display_, window_, &win_attr);
-  gr_->SetSize(std::max(win_attr.width - 2 * kPadding, 1),
-               std::max(win_attr.height - 2 * kPadding, 1));
+  gr_->SetSize(0.1*std::max(win_attr.width - 2 * kPadding, 1),
+               0.1*std::max(win_attr.height - 2 * kPadding, 1));
   gr_->Clf();
 }

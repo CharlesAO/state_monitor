@@ -6,7 +6,7 @@
 #include <X11/keysym.h>
 #include <X11/XKBlib.h>
 #include <mgl2/mgl.h>
-#include <mgl2/fltk.h>
+#include <mgl2/glut.h>
 
 class X11Window {
  public:
