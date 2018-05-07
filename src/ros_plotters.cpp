@@ -35,6 +35,21 @@ void OdometryPlotter::callback(const nav_msgs::OdometryConstPtr &msg) {
                                             msg->twist.twist.angular.z);
 }
 
+FloatPlotter::FloatPlotter(const ros::NodeHandle &nh, const std::string &topic,
+                           const std::shared_ptr<mglGraph> &gr,
+                           const double keep_data_for_secs,
+                           const size_t num_subplots_wide,
+                           const size_t num_subplots_high,
+                           const std::string title, const size_t subplot_idx)
+    : RosPlotter(nh, topic, gr, keep_data_for_secs, num_subplots_wide,
+                 num_subplots_high, {title}, {subplot_idx}) {}
+
+void FloatPlotter::callback(const std_msgs::Float64ConstPtr &msg) {
+  const double t = (ros::Time::now()).toSec();
+
+  sub_plots_.front().addDataPoint(t, msg->data);
+}
+
 PointPlotter::PointPlotter(const ros::NodeHandle &nh, const std::string &topic,
                            const std::shared_ptr<mglGraph> &gr,
                            const double keep_data_for_secs,
