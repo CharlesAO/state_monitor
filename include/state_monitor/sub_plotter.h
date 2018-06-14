@@ -204,13 +204,13 @@ class SubPlotter {
                      plotter_data_.getMaxTimeValue(), min_data_value,
                      max_data_value);
 
-      const std::string line_styles = "---;;;---";
+      const std::string line_styles = "---...---";
       const std::string line_colors = "bgrbgrcmy";
 
       for (int i = 0; i < mgl_variable_data.size(); ++i) {
         std::string line_format;
-        line_format.push_back(line_styles[i % line_styles.size()]);
         line_format.push_back(line_colors[i % line_colors.size()]);
+        line_format.push_back(line_styles[i % line_styles.size()]);
         gr_->Plot(mgl_time_data, mgl_variable_data[i], line_format.c_str());
       }
     }

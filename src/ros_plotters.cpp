@@ -273,15 +273,12 @@ void ObserverStatePlotter::callback(
   sub_plots_[ORIENTATION].addDataPoint(t, msg->attitude[0], msg->attitude[1],
                                        msg->attitude[2], roll, pitch, yaw);
 
-  // Ugly hack, we plot the same data twice so everything has 6 inputs
   sub_plots_[EXTERNAL_FORCES].addDataPoint(
       t, msg->external_forces[0], msg->external_forces[1],
-      msg->external_forces[2], msg->external_forces[0], msg->external_forces[1],
-      msg->external_forces[2]);
+      msg->external_forces[2], NAN, NAN, NAN);
   sub_plots_[EXTERNAL_MOMENTS].addDataPoint(
       t, msg->external_moments[0], msg->external_moments[1],
-      msg->external_moments[2], msg->external_moments[0],
-      msg->external_moments[1], msg->external_moments[2]);
+      msg->external_moments[2], NAN, NAN, NAN);
 }
 
 void ObserverStatePlotter::refCallback(
