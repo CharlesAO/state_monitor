@@ -139,8 +139,9 @@ ImuBiasPlotter::ImuBiasPlotter(
     const size_t linear_acceleration_bias_subplot_idx,
     const size_t angular_velocity_bias_subplot_idx)
     : RosPlotter(nh, topic, gr, keep_data_for_secs, num_subplots_wide,
-                 num_subplots_high, {"Linear Acceleration Bias (m^2/s)",
-                                     "Angular Velocity Bias (rads/s)"},
+                 num_subplots_high,
+                 {"Linear Acceleration Bias (m^2/s)",
+                  "Angular Velocity Bias (rads/s)"},
                  {linear_acceleration_bias_subplot_idx,
                   angular_velocity_bias_subplot_idx}) {}
 
@@ -209,8 +210,9 @@ MSFStatePlotter::MSFStatePlotter(
     const size_t linear_acceleration_bias_subplot_idx,
     const size_t angular_velocity_bias_subplot_idx)
     : RosPlotter(nh, topic, gr, keep_data_for_secs, num_subplots_wide,
-                 num_subplots_high, {"Linear Acceleration Bias (m^2/s)",
-                                     "Angular Velocity Bias (rads/s)"},
+                 num_subplots_high,
+                 {"Linear Acceleration Bias (m^2/s)",
+                  "Angular Velocity Bias (rads/s)"},
                  {linear_acceleration_bias_subplot_idx,
                   angular_velocity_bias_subplot_idx}) {}
 
@@ -237,51 +239,54 @@ void MSFStatePlotter::callback(
 
 #ifdef MAV_CONTROL_RW_FOUND
 ObserverStatePlotter::ObserverStatePlotter(
-    const ros::NodeHandle &nh, const std::string &topic,
-    const std::shared_ptr<mglGraph> &gr, const double keep_data_for_secs,
-    const size_t num_subplots_wide, const size_t num_subplots_high,
-    const size_t position_subplot_idx, const size_t linear_velocity_subplot_idx,
+    const ros::NodeHandle &nh, const std::string &observer_topic,
+    const std::string &ref_topic, const std::shared_ptr<mglGraph> &gr,
+    const double keep_data_for_secs, const size_t num_subplots_wide,
+    const size_t num_subplots_high, const size_t position_subplot_idx,
     const size_t orientation_subplot_idx,
-    const size_t angular_velocity_subplot_idx,
     const size_t external_forces_subplot_idx,
-    const size_t external_moments_subplot_idx,
-    const size_t forces_offset_subplot_idx,
-    const size_t moments_offset_subplot_idx)
-    : RosPlotter(
-          nh, topic, gr, keep_data_for_secs, num_subplots_wide,
-          num_subplots_high,
-          {"Position (m)", "Linear Velocity (m/s)", "Orientation (rads)",
-           "Angular Velocity (rads/s)", "External Forces (N)",
-           "External Moments (Nm)", "Force Offset (m)", "Moment Offset (m)"},
-          {position_subplot_idx, linear_velocity_subplot_idx,
-           orientation_subplot_idx, angular_velocity_subplot_idx,
-           external_forces_subplot_idx, external_moments_subplot_idx,
-           forces_offset_subplot_idx, moments_offset_subplot_idx}) {}
+    const size_t external_moments_subplot_idx)
+    : RosPlotter(nh, observer_topic, gr, keep_data_for_secs, num_subplots_wide,
+                 num_subplots_high,
+                 {"Position (m)", "Orientation (rads)", "External Forces (N)",
+                  "External Moments (Nm)"},
+                 {position_subplot_idx, orientation_subplot_idx,
+                  external_forces_subplot_idx, external_moments_subplot_idx}) {
+  ref_sub_ = nh_.subscribe(ref_topic, kQueueSize,
+                           &ObserverStatePlotter::refCallback, this);
+}
 
 void ObserverStatePlotter::callback(
     const mav_disturbance_observer::ObserverStateConstPtr &msg) {
   const double t = msg->header.stamp.toSec();
 
   sub_plots_[POSITION].addDataPoint(t, msg->position[0], msg->position[1],
-                                    msg->position[2]);
-  sub_plots_[LINEAR_VELOCITY].addDataPoint(t, msg->velocity[0],
-                                           msg->velocity[1], msg->velocity[2]);
+                                    msg->position[2], last_ref_.translation.x,
+                                    last_ref_.translation.y,
+                                    last_ref_.translation.z);
+
+  double roll, pitch, yaw;
+  tf::Matrix3x3(tf::Quaternion(last_ref_.rotation.x, last_ref_.rotation.y,
+                               last_ref_.rotation.z, last_ref_.rotation.w))
+      .getRPY(roll, pitch, yaw);
+
   sub_plots_[ORIENTATION].addDataPoint(t, msg->attitude[0], msg->attitude[1],
-                                       msg->attitude[2]);
-  sub_plots_[ANGULAR_VELOCITY].addDataPoint(t, msg->angular_velocity[0],
-                                            msg->angular_velocity[1],
-                                            msg->angular_velocity[2]);
-  sub_plots_[EXTERNAL_FORCES].addDataPoint(t, msg->external_forces[0],
-                                           msg->external_forces[1],
-                                           msg->external_forces[2]);
-  sub_plots_[EXTERNAL_MOMENTS].addDataPoint(t, msg->external_moments[0],
-                                            msg->external_moments[1],
-                                            msg->external_moments[2]);
-  sub_plots_[FORCES_OFFSET].addDataPoint(
-      t, msg->forces_offset[0], msg->forces_offset[1], msg->forces_offset[2]);
-  sub_plots_[MOMENTS_OFFSET].addDataPoint(t, msg->moments_offset[0],
-                                          msg->moments_offset[1],
-                                          msg->moments_offset[2]);
+                                       msg->attitude[2], roll, pitch, yaw);
+
+  // Ugly hack, we plot the same data twice so everything has 6 inputs
+  sub_plots_[EXTERNAL_FORCES].addDataPoint(
+      t, msg->external_forces[0], msg->external_forces[1],
+      msg->external_forces[2], msg->external_forces[0], msg->external_forces[1],
+      msg->external_forces[2]);
+  sub_plots_[EXTERNAL_MOMENTS].addDataPoint(
+      t, msg->external_moments[0], msg->external_moments[1],
+      msg->external_moments[2], msg->external_moments[0],
+      msg->external_moments[1], msg->external_moments[2]);
+}
+
+void ObserverStatePlotter::refCallback(
+    const trajectory_msgs::MultiDOFJointTrajectoryConstPtr &msg) {
+  last_ref_ = msg->points[0].transforms[0];
 }
 
 RPYRateThrustPlotter::RPYRateThrustPlotter(
