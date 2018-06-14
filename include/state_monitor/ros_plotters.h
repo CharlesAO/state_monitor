@@ -212,36 +212,35 @@ class MSFStatePlotter
 #endif
 
 #ifdef MAV_CONTROL_RW_FOUND
+
+//a weird special cose that subscribes to two topics, so they can be displayed on one graph
 class ObserverStatePlotter
-    : public RosPlotter<mav_disturbance_observer::ObserverStateConstPtr, 8, 3> {
+    : public RosPlotter<mav_disturbance_observer::ObserverStateConstPtr, 4, 6> {
  public:
-  ObserverStatePlotter(const ros::NodeHandle &nh, const std::string &topic,
+  ObserverStatePlotter(const ros::NodeHandle &nh, const std::string &observer_topic, const std::string& ref_topic,
                        const std::shared_ptr<mglGraph> &gr,
                        const double keep_data_for_secs,
                        const size_t num_subplots_wide,
                        const size_t num_subplots_high,
                        const size_t position_subplot_idx,
-                       const size_t linear_velocity_subplot_idx,
                        const size_t orientation_subplot_idx,
-                       const size_t angular_velocity_subplot_idx,
                        const size_t external_forces_subplot_idx,
-                       const size_t external_moments_subplot_idx,
-                       const size_t forces_offset_subplot_idx,
-                       const size_t moments_offset_subplot_idx);
+                       const size_t external_moments_subplot_idx);
 
  private:
   void callback(const mav_disturbance_observer::ObserverStateConstPtr &msg);
 
+  void refCallback(const trajectory_msgs::MultiDOFJointTrajectoryConstPtr &msg);
+
   enum PlotOrder {
     POSITION,
-    LINEAR_VELOCITY,
     ORIENTATION,
-    ANGULAR_VELOCITY,
     EXTERNAL_FORCES,
-    EXTERNAL_MOMENTS,
-    FORCES_OFFSET,
-    MOMENTS_OFFSET
+    EXTERNAL_MOMENTS
   };
+
+  ros::Subscriber ref_sub_;
+  geometry_msgs::Transform last_ref_;
 };
 
 class RPYRateThrustPlotter

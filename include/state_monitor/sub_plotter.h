@@ -32,9 +32,9 @@ class PlotterData {
                         time_data_.size() - data_ptr_offset_);
 
     for (size_t i = 0; i < data_dim_; ++i) {
-      mgl_variable_data->at(i)
-          .Link(&(variable_data_[i][data_ptr_offset_]),
-                variable_data_[i].size() - data_ptr_offset_);
+      mgl_variable_data->at(i).Link(
+          &(variable_data_[i][data_ptr_offset_]),
+          variable_data_[i].size() - data_ptr_offset_);
     }
   }
 
@@ -197,15 +197,21 @@ class SubPlotter {
       mreal min_data_value = plotter_data_.getMinDataValue();
       mreal max_data_value = plotter_data_.getMaxDataValue();
       const mreal range = max_data_value - min_data_value + kRangePad;
-      min_data_value = min_data_value - kPadAxes*range;
-      max_data_value = max_data_value + kPadAxes*range;
+      min_data_value = min_data_value - kPadAxes * range;
+      max_data_value = max_data_value + kPadAxes * range;
 
-      gr_->SetRanges(
-          plotter_data_.getMinTimeValue(), plotter_data_.getMaxTimeValue(),
-          min_data_value, max_data_value);
+      gr_->SetRanges(plotter_data_.getMinTimeValue(),
+                     plotter_data_.getMaxTimeValue(), min_data_value,
+                     max_data_value);
 
-      for (mglData &mgl_element_data : mgl_variable_data) {
-        gr_->Plot(mgl_time_data, mgl_element_data, "-");
+      const std::string line_styles = "---...---";
+      const std::string line_colors = "bgrbgrcmy";
+
+      for (int i = 0; i < mgl_variable_data.size(); ++i) {
+        std::string line_format;
+        line_format.push_back(line_colors[i % line_colors.size()]);
+        line_format.push_back(line_styles[i % line_styles.size()]);
+        gr_->Plot(mgl_time_data, mgl_variable_data[i], line_format.c_str());
       }
     }
 
