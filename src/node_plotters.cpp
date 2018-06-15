@@ -125,15 +125,22 @@ MavrosPlotter::MavrosPlotter(const std::string& topic_base,
   constexpr size_t kNumSubplotsWide = 4;
   constexpr size_t kNumSubplotsHigh = 2;
 
-  constexpr size_t kLinearAccelerationPlotIdx = 1;
+  constexpr size_t kPositionPlotIdx = 1;
   constexpr size_t kOrientationPlotIdx = 2;
-  constexpr size_t kAngularVelocityPlotIdx = 3;
-  constexpr size_t kRadioPlotIdx = 5;
+  constexpr size_t kLinearAccelerationPlotIdx = 5;
+  constexpr size_t kAngularVelocityPlotIdx = 6;
+  constexpr size_t kRadioPlotIdx = 7;
 
   plotters_.push_back(std::make_shared<ImuPlotter>(
-      nh_, topic_base + "imu/data", gr, keep_data_for_secs, kNumSubplotsWide,
-      kNumSubplotsHigh, kLinearAccelerationPlotIdx, kOrientationPlotIdx,
+      nh_, topic_base + "imu/data_raw", gr, keep_data_for_secs,
+      kNumSubplotsWide, kNumSubplotsHigh, kLinearAccelerationPlotIdx,
       kAngularVelocityPlotIdx));
+
+  plotters_.push_back(std::make_shared<MAVROSPosePlotter>(
+      nh_, topic_base + "local_position/pose",
+      topic_base + "setpoint_raw/attitude", topic_base + "setpoint_raw/local",
+      gr, keep_data_for_secs, kNumSubplotsWide, kNumSubplotsHigh,
+      kPositionPlotIdx, kOrientationPlotIdx));
 
   plotters_.push_back(std::make_shared<JoyPlotter>(
       nh_, topic_base + "rc/in", gr, keep_data_for_secs, kNumSubplotsWide,

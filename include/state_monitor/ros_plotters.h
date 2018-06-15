@@ -20,6 +20,11 @@
 #include <mav_msgs/RollPitchYawrateThrust.h>
 #endif
 
+#ifdef MAVROS_FOUND
+#include <mavros_msgs/AttitudeTarget.h>
+#include <mavros_msgs/PositionTarget.h>
+#endif
+
 #include "state_monitor/sub_plotter.h"
 
 // needed so we can use a pointer to a plotter of unknown type to kick off a
@@ -146,20 +151,19 @@ class PosePlotter
   enum PlotOrder { POSITION, ORIENTATION };
 };
 
-class ImuPlotter : public RosPlotter<sensor_msgs::ImuConstPtr, 3, 3> {
+class ImuPlotter : public RosPlotter<sensor_msgs::ImuConstPtr, 2, 3> {
  public:
   ImuPlotter(const ros::NodeHandle &nh, const std::string &topic,
              const std::shared_ptr<mglGraph> &gr,
              const double keep_data_for_secs, const size_t num_subplots_wide,
              const size_t num_subplots_high,
              const size_t linear_acceleration_subplot_idx,
-             const size_t orientation_subplot_idx,
              const size_t angular_velocity_subplot_idx);
 
  private:
   void callback(const sensor_msgs::ImuConstPtr &msg);
 
-  enum PlotOrder { LINEAR_ACCELERATION, ORIENTATION, ANGULAR_VELOCITY };
+  enum PlotOrder { LINEAR_ACCELERATION, ANGULAR_VELOCITY };
 };
 
 class ImuBiasPlotter : public RosPlotter<sensor_msgs::ImuConstPtr, 2, 3> {
@@ -227,31 +231,26 @@ class MSFStatePlotter
 
 #ifdef MAV_CONTROL_RW_FOUND
 
-//a weird special cose that subscribes to two topics, so they can be displayed on one graph
+// a weird special cose that subscribes to two topics, so they can be displayed
+// on one graph
 class ObserverStatePlotter
     : public RosPlotter<mav_disturbance_observer::ObserverStateConstPtr, 4, 6> {
  public:
-  ObserverStatePlotter(const ros::NodeHandle &nh, const std::string &observer_topic, const std::string& ref_topic,
-                       const std::shared_ptr<mglGraph> &gr,
-                       const double keep_data_for_secs,
-                       const size_t num_subplots_wide,
-                       const size_t num_subplots_high,
-                       const size_t position_subplot_idx,
-                       const size_t orientation_subplot_idx,
-                       const size_t external_forces_subplot_idx,
-                       const size_t external_moments_subplot_idx);
+  ObserverStatePlotter(
+      const ros::NodeHandle &nh, const std::string &observer_topic,
+      const std::string &ref_topic, const std::shared_ptr<mglGraph> &gr,
+      const double keep_data_for_secs, const size_t num_subplots_wide,
+      const size_t num_subplots_high, const size_t position_subplot_idx,
+      const size_t orientation_subplot_idx,
+      const size_t external_forces_subplot_idx,
+      const size_t external_moments_subplot_idx);
 
  private:
   void callback(const mav_disturbance_observer::ObserverStateConstPtr &msg);
 
   void refCallback(const trajectory_msgs::MultiDOFJointTrajectoryConstPtr &msg);
 
-  enum PlotOrder {
-    POSITION,
-    ORIENTATION,
-    EXTERNAL_FORCES,
-    EXTERNAL_MOMENTS
-  };
+  enum PlotOrder { POSITION, ORIENTATION, EXTERNAL_FORCES, EXTERNAL_MOMENTS };
 
   ros::Subscriber ref_sub_;
   geometry_msgs::Transform last_ref_;
@@ -272,6 +271,40 @@ class RPYRateThrustPlotter
   void callback(const mav_msgs::RollPitchYawrateThrustConstPtr &msg);
 
   enum PlotOrder { RPY_RATE, THRUST };
+};
+#endif
+
+#ifdef MAVROS_FOUND
+
+// a weird special cose that subscribes to three topics
+class MAVROSPosePlotter
+    : public RosPlotter<geometry_msgs::PoseStampedConstPtr, 2, 6> {
+ public:
+  MAVROSPosePlotter(const ros::NodeHandle &nh, const std::string &pose_topic,
+                       const std::string &attitude_setpoint_topic,
+                       const std::string &position_setpoint_topic,
+                       const std::shared_ptr<mglGraph> &gr,
+                       const double keep_data_for_secs,
+                       const size_t num_subplots_wide,
+                       const size_t num_subplots_high,
+                       const size_t position_subplot_idx,
+                       const size_t orientation_subplot_idx);
+
+ private:
+  void callback(const geometry_msgs::PoseStampedConstPtr &msg);
+
+  void attitudeSetpointCallback(const mavros_msgs::AttitudeTargetConstPtr &msg);
+
+  void positionSetpointCallback(const mavros_msgs::PositionTargetConstPtr &msg);
+
+  enum PlotOrder {
+    POSITION,
+    ORIENTATION,
+  };
+
+  ros::Subscriber attitude_setpoint_sub_;
+  ros::Subscriber position_setpoint_sub_;
+  geometry_msgs::Pose last_setpoint_;
 };
 #endif
 

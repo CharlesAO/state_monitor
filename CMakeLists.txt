@@ -36,6 +36,17 @@ ELSE()
   MESSAGE(WARNING "mav_disturbance_observer not found, building without mav_control_rw support")
 ENDIF()
 
+find_package(mavros)
+IF(${mavros_FOUND})
+  add_definitions(-DMAVROS_FOUND)
+
+  include_directories(
+    ${mavros_INCLUDE_DIRS}
+  )
+ELSE()
+  MESSAGE(WARNING "mavros not found, building without mavros support")
+ENDIF()
+
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
