@@ -7,6 +7,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
+#include <std_msgs/Float64.h>
 #include <sensor_msgs/Joy.h>
 #include <trajectory_msgs/MultiDOFJointTrajectory.h>
 
@@ -85,6 +86,19 @@ class OdometryPlotter : public RosPlotter<nav_msgs::OdometryConstPtr, 4, 3> {
   void callback(const nav_msgs::OdometryConstPtr &msg);
 
   enum PlotOrder { POSITION, LINEAR_VELOCITY, ORIENTATION, ANGULAR_VELOCITY };
+};
+
+class FloatPlotter
+    : public RosPlotter<std_msgs::Float64ConstPtr, 1, 1> {
+ public:
+  FloatPlotter(const ros::NodeHandle &nh, const std::string &topic,
+               const std::shared_ptr<mglGraph> &gr,
+               const double keep_data_for_secs, const size_t num_subplots_wide,
+               const size_t num_subplots_high, const std::string title,
+               const size_t subplot_idx);
+
+ private:
+  void callback(const std_msgs::Float64ConstPtr &msg);
 };
 
 class PointPlotter

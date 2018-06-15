@@ -18,6 +18,17 @@ void StateMonitor::createNodePlotterFromTopicInfo(
     const ros::master::TopicInfo& topic_info) {
   size_t match;
 
+  // Time Autosync
+  match = topic_info.name.find("delta_t");
+  if (match != std::string::npos) {
+    const std::string topic_base = topic_info.name.substr(0, match);
+    node_plotter_map_.emplace(std::make_pair(
+        topic_base, std::make_shared<TimeAutosyncPlotter>(
+                        topic_base, nh_, x11_window_.getMGLGraph(),
+                        plot_time_length_secs_)));
+    return;
+  }
+
   // SWF
   match = topic_info.name.find("swf/local_odometry");
   if (match != std::string::npos) {
@@ -116,8 +127,7 @@ void StateMonitor::processKeyPress(const KeySym key) {
   else if (key == XK_r) {
     auto it = node_plotter_map_.find(node_in_focus_);
     it->second->reset();
-  }
-  else if (key == XK_Escape) {
+  } else if (key == XK_Escape) {
     exit(1);
   }
 }
@@ -148,10 +158,12 @@ void StateMonitor::printSidebar() {
   gr->SubPlot(kNumSubplotsWide, kNumSideBarsHigh, kSideBarIdx, "");
   gr->SetRanges(0, 1, 0, 1);
   mreal text_location = kTextStartPos;
-  gr->Puts(mglPoint(0.5, text_location), "\\b{State Monitor}", "w:C", 2*kTextSize);
+  gr->Puts(mglPoint(0.5, text_location), "\\b{State Monitor}", "w:C",
+           2 * kTextSize);
 
-  gr->Puts(mglPoint(0,-0.05),"#b{X} #g{Y} #r{Z} #b{Roll} #g{Pitch} #r{Yaw}", "w:L", kTextSize);
-  text_location -= 2*kLineHeight;
+  gr->Puts(mglPoint(0, -0.05), "#b{X} #g{Y} #r{Z} #b{Roll} #g{Pitch} #r{Yaw}",
+           "w:L", kTextSize);
+  text_location -= 2 * kLineHeight;
   gr->Puts(mglPoint(0, text_location), "Monitored Nodes:", "w:L", kTextSize);
 
   for (auto it = node_plotter_map_.begin(); it != node_plotter_map_.end();

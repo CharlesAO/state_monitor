@@ -15,6 +15,28 @@ void NodePlotter::plot() {
   }
 }
 
+TimeAutosyncPlotter::TimeAutosyncPlotter(const std::string& topic_base,
+                                         const ros::NodeHandle& nh,
+                                         const std::shared_ptr<mglGraph>& gr,
+                                         const double keep_data_for_secs)
+    : NodePlotter(topic_base, nh) {
+  constexpr size_t kNumSubplotsWide = 3;
+  constexpr size_t kNumSubplotsHigh = 1;
+
+  constexpr size_t kDeltaTPlotIdx = 1;
+  constexpr size_t kOffsetPlotIdx = 2;
+
+  plotters_.push_back(std::make_shared<FloatPlotter>(
+      nh_, topic_base + "delta_t", gr, keep_data_for_secs, kNumSubplotsWide,
+      kNumSubplotsHigh, "Time between frames (s)", kDeltaTPlotIdx));
+
+  plotters_.push_back(std::make_shared<FloatPlotter>(
+      nh_, topic_base + "offset", gr, keep_data_for_secs, kNumSubplotsWide,
+      kNumSubplotsHigh,
+      "Time offset (s)",
+      kOffsetPlotIdx));
+}
+
 SWFPlotter::SWFPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
                        const std::shared_ptr<mglGraph>& gr,
                        const double keep_data_for_secs)

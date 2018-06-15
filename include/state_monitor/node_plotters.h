@@ -22,6 +22,15 @@ class NodePlotter {
   std::vector<std::shared_ptr<RosPlotterBase>> plotters_;
 };
 
+class TimeAutosyncPlotter : public NodePlotter {
+ public:
+  TimeAutosyncPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
+             const std::shared_ptr<mglGraph>& gr,
+             const double keep_data_for_secs);
+
+  void reset(){}
+};
+
 class SWFPlotter : public NodePlotter {
  public:
   SWFPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
