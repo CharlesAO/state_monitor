@@ -40,6 +40,7 @@ class RovioPlotter : public NodePlotter {
   void reset();
 };
 
+#ifdef MAVROS_FOUND
 class MavrosPlotter : public NodePlotter {
  public:
   MavrosPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
@@ -48,6 +49,7 @@ class MavrosPlotter : public NodePlotter {
 
   void reset(){}
 };
+#endif
 
 #ifdef MSF_FOUND
 class MSFPlotter : public NodePlotter {

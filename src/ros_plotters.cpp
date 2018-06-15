@@ -106,27 +106,19 @@ ImuPlotter::ImuPlotter(const ros::NodeHandle &nh, const std::string &topic,
                        const size_t num_subplots_wide,
                        const size_t num_subplots_high,
                        const size_t linear_acceleration_subplot_idx,
-                       const size_t orientation_subplot_idx,
                        const size_t angular_velocity_subplot_idx)
-    : RosPlotter(nh, topic, gr, keep_data_for_secs, num_subplots_wide,
-                 num_subplots_high,
-                 {"Linear Acceleration (m^2/s)", "Orientation (rads)",
-                  "Angular Velocity (rads/s)"},
-                 {linear_acceleration_subplot_idx, orientation_subplot_idx,
-                  angular_velocity_subplot_idx}) {}
+    : RosPlotter(
+          nh, topic, gr, keep_data_for_secs, num_subplots_wide,
+          num_subplots_high,
+          {"Linear Acceleration (m^2/s)", "Angular Velocity (rads/s)"},
+          {linear_acceleration_subplot_idx, angular_velocity_subplot_idx}) {}
 
 void ImuPlotter::callback(const sensor_msgs::ImuConstPtr &msg) {
   const double t = msg->header.stamp.toSec();
 
-  double roll, pitch, yaw;
-  tf::Matrix3x3(tf::Quaternion(msg->orientation.x, msg->orientation.y,
-                               msg->orientation.z, msg->orientation.w))
-      .getRPY(roll, pitch, yaw);
-
   sub_plots_[LINEAR_ACCELERATION].addDataPoint(t, msg->linear_acceleration.x,
                                                msg->linear_acceleration.y,
                                                msg->linear_acceleration.z);
-  sub_plots_[ORIENTATION].addDataPoint(t, roll, pitch, yaw);
   sub_plots_[ANGULAR_VELOCITY].addDataPoint(t, msg->angular_velocity.x,
                                             msg->angular_velocity.y,
                                             msg->angular_velocity.z);
@@ -303,5 +295,60 @@ void RPYRateThrustPlotter::callback(
   sub_plots_[RPY_RATE].addDataPoint(t, msg->roll, msg->pitch, msg->yaw_rate);
   sub_plots_[THRUST].addDataPoint(t, msg->thrust.x, msg->thrust.y,
                                   msg->thrust.z);
+}
+#endif
+
+#ifdef MAVROS_FOUND
+MAVROSPosePlotter::MAVROSPosePlotter(
+    const ros::NodeHandle &nh, const std::string &pose_topic,
+    const std::string &attitude_setpoint_topic,
+    const std::string &position_setpoint_topic,
+    const std::shared_ptr<mglGraph> &gr, const double keep_data_for_secs,
+    const size_t num_subplots_wide, const size_t num_subplots_high,
+    const size_t position_subplot_idx, const size_t orientation_subplot_idx)
+    : RosPlotter(nh, pose_topic, gr, keep_data_for_secs, num_subplots_wide,
+                 num_subplots_high, {"Position (m)", "Orientation (rads)"},
+                 {position_subplot_idx, orientation_subplot_idx}) {
+  attitude_setpoint_sub_ =
+      nh_.subscribe(attitude_setpoint_topic, kQueueSize,
+                    &MAVROSPosePlotter::attitudeSetpointCallback, this);
+  position_setpoint_sub_ =
+      nh_.subscribe(position_setpoint_topic, kQueueSize,
+                    &MAVROSPosePlotter::positionSetpointCallback, this);
+}
+
+void MAVROSPosePlotter::callback(
+    const geometry_msgs::PoseStampedConstPtr &msg) {
+  const double t = msg->header.stamp.toSec();
+
+  sub_plots_[POSITION].addDataPoint(
+      t, msg->pose.position.x, msg->pose.position.y, msg->pose.position.z,
+      last_setpoint_.position.x, last_setpoint_.position.y,
+      last_setpoint_.position.z);
+
+  double roll, pitch, yaw;
+  tf::Matrix3x3(tf::Quaternion(msg->pose.orientation.x, msg->pose.orientation.y,
+                               msg->pose.orientation.z,
+                               msg->pose.orientation.w))
+      .getRPY(roll, pitch, yaw);
+
+  double setpoint_roll, setpoint_pitch, setpoint_yaw;
+  tf::Matrix3x3(tf::Quaternion(
+                    last_setpoint_.orientation.x, last_setpoint_.orientation.y,
+                    last_setpoint_.orientation.z, last_setpoint_.orientation.w))
+      .getRPY(setpoint_roll, setpoint_pitch, setpoint_yaw);
+
+  sub_plots_[ORIENTATION].addDataPoint(t, roll, pitch, yaw, setpoint_roll,
+                                       setpoint_pitch, setpoint_yaw);
+}
+
+void MAVROSPosePlotter::attitudeSetpointCallback(
+    const mavros_msgs::AttitudeTargetConstPtr &msg) {
+  last_setpoint_.orientation = msg->orientation;
+}
+
+void MAVROSPosePlotter::positionSetpointCallback(
+    const mavros_msgs::PositionTargetConstPtr &msg) {
+  last_setpoint_.position = msg->position;
 }
 #endif
