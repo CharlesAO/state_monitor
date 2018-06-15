@@ -138,7 +138,7 @@ void StateMonitor::printSidebar() {
   std::shared_ptr<mglGraph> gr = x11_window_.getMGLGraph();
 
   constexpr double kTextStartPos = 1.00;
-  constexpr double kTextSize = 5.0;
+  constexpr double kTextSize = 4.0;
   constexpr double kLineHeight = 0.05;
 
   constexpr size_t kSideBarIdx = 0;
@@ -150,7 +150,7 @@ void StateMonitor::printSidebar() {
   mreal text_location = kTextStartPos;
   gr->Puts(mglPoint(0.5, text_location), "\\b{State Monitor}", "w:C", 2*kTextSize);
 
-  gr->Puts(mglPoint(0,-0.05),"#b{X} #g{Y} #r{Z} #b{Roll} #g{Pitch} #r{Yaw}", "w:L", kTextSize);
+  gr->Puts(mglPoint(0,-0.05),"#b{X} #g{Y} #q{Z} #b{Roll} #g{Pitch} #q{Yaw}", "w:L", kTextSize);
   text_location -= 2*kLineHeight;
   gr->Puts(mglPoint(0, text_location), "Monitored Nodes:", "w:L", kTextSize);
 
