@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ~/catkin_ws/devel/setup.bash
+
 ROS_RUNNING=$(rostopic list | head -c1)
 
 if [ "$ROS_RUNNING" == "/" ]
@@ -7,4 +9,5 @@ then
   numactl --physcpubind=+0 rosrun state_monitor state_monitor_node
 else
   echo "No roscore found, could not start state monitor."
+  notify-send "No roscore found, could not start state monitor."
 fi
