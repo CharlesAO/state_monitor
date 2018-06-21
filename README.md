@@ -21,11 +21,13 @@ A reset service call to the currently selected node can be performed by pressing
 * SWF
 * Mav Control RW
 * Mavros
+* Time Autosync
 
 ## Supported Ros Topics
 
 * geometry_msgs/PointStamped
 * nav_msgs/Odometry
+* std_msgs/Float64
 * sensor_msgs/Imu
 * sensor_msgs/Joy
 * trajectory_msgs/MultiDOFJointTrajectory
