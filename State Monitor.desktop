@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=State Monitor
+Icon=state_monitor.png
+Exec=sh -c "~/catkin_ws/devel/bin/state_monitor" 
+Terminal=false
