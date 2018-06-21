@@ -205,7 +205,7 @@ class SubPlotter {
                      max_data_value);
 
       const std::string line_styles = "---...---";
-      const std::string line_colors = "bgrbgrcmy";
+      const std::string line_colors = "bgqbgqcmy";
 
       for (int i = 0; i < mgl_variable_data.size(); ++i) {
         std::string line_format;

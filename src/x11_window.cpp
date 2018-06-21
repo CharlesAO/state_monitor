@@ -1,3 +1,5 @@
+#include <X11/Xutil.h>
+
 #include "state_monitor/x11_window.h"
 
 X11Window::X11Window(const size_t graph_quality) {
@@ -32,6 +34,12 @@ X11Window::X11Window(const size_t graph_quality) {
 
   XMapWindow(display_, window_);
   XFlush(display_);
+
+  XClassHint class_hint;
+  class_hint.res_name = "State Monitor";
+  class_hint.res_class = "State Monitor";
+
+  XSetClassHint(display_, window_, &class_hint);
 }
 
 void X11Window::render() {
