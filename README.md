@@ -9,7 +9,7 @@ State Monitor depends on mathgl and X11. To stop runaway cpu usage it also needs
 
 # Usage
 
-To start State Monitor simply type `state_monitor` in a terminal. It will automatically search all advertised topics and subscribe to the nodes automatically. These nodes may be renamed or in groups, but should not have their outputs remapped to different topic names. Remapping inputs however, does not effect the subscription.
+To start State Monitor simply type `state_monitor` into either a terminal or the launcher bar. It will search all advertised topics and subscribe to the nodes automatically. These nodes may be renamed or in groups, but should not have their outputs remapped to different topic names. Remapping inputs however, does not effect the subscription.
 
 The list of subscribeable nodes is shown on the left side of the screen, the currently displayed node is shown in cyan. The displayed node can be changed by using the up/down arrow keys.
 A reset service call to the currently selected node can be performed by pressing the 'r' key.
