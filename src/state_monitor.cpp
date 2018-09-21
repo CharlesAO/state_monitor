@@ -51,6 +51,17 @@ void StateMonitor::createNodePlotterFromTopicInfo(
     return;
   }
 
+  // Odom Predictor
+  match = topic_info.name.find("predicted_odometry");
+  if (match != std::string::npos) {
+    const std::string topic_base = topic_info.name.substr(0, match);
+    node_plotter_map_.emplace(std::make_pair(
+        topic_base, std::make_shared<OdomPredictorPlotter>(topic_base, nh_,
+                                                   x11_window_.getMGLGraph(),
+                                                   plot_time_length_secs_)));
+    return;
+  }
+
   // Mavros
   match = topic_info.name.find("vfr_hud");
   if (match != std::string::npos) {

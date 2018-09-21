@@ -25,10 +25,10 @@ class NodePlotter {
 class TimeAutosyncPlotter : public NodePlotter {
  public:
   TimeAutosyncPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
-             const std::shared_ptr<mglGraph>& gr,
-             const double keep_data_for_secs);
+                      const std::shared_ptr<mglGraph>& gr,
+                      const double keep_data_for_secs);
 
-  void reset(){}
+  void reset() {}
 };
 
 class SWFPlotter : public NodePlotter {
@@ -49,14 +49,23 @@ class RovioPlotter : public NodePlotter {
   void reset();
 };
 
+class OdomPredictorPlotter : public NodePlotter {
+ public:
+  OdomPredictorPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
+                       const std::shared_ptr<mglGraph>& gr,
+                       const double keep_data_for_secs);
+
+  void reset() {}
+};
+
 #ifdef MAVROS_FOUND
 class MavrosPlotter : public NodePlotter {
  public:
   MavrosPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
-               const std::shared_ptr<mglGraph>& gr,
-               const double keep_data_for_secs);
+                const std::shared_ptr<mglGraph>& gr,
+                const double keep_data_for_secs);
 
-  void reset(){}
+  void reset() {}
 };
 #endif
 
@@ -75,10 +84,10 @@ class MSFPlotter : public NodePlotter {
 class MAVControlRWPlotter : public NodePlotter {
  public:
   MAVControlRWPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
-             const std::shared_ptr<mglGraph>& gr,
-             const double keep_data_for_secs);
+                      const std::shared_ptr<mglGraph>& gr,
+                      const double keep_data_for_secs);
 
-  void reset(){}
+  void reset() {}
 };
 #endif
 
