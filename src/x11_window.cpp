@@ -36,8 +36,9 @@ X11Window::X11Window(const size_t graph_quality) {
   XFlush(display_);
 
   XClassHint class_hint;
-  class_hint.res_name = "State Monitor";
-  class_hint.res_class = "State Monitor";
+  char name[] = "State Monitor";
+  class_hint.res_name = name;
+  class_hint.res_class = name;
 
   XSetClassHint(display_, window_, &class_hint);
 }
