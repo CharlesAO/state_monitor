@@ -249,8 +249,7 @@ void MAVControlRWPlotter::reset() {
   std_srvs::Empty srv;
 
   if (client.call(srv)) {
-    ROS_INFO_STREAM(
-        "MAV_Control_RW Response to Reset: " << srv.response.result);
+    ROS_INFO_STREAM("Reset MAV_Control_RW on reset_integrator");
   } else {
     ROS_ERROR_STREAM("Failed to reset MAV_Control_RW on reset_integrator");
   }
