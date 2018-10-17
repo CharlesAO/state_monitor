@@ -87,7 +87,7 @@ class MAVControlRWPlotter : public NodePlotter {
                       const std::shared_ptr<mglGraph>& gr,
                       const double keep_data_for_secs);
 
-  void reset() {}
+  void reset();
 };
 #endif
 

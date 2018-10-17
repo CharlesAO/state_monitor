@@ -32,9 +32,7 @@ TimeAutosyncPlotter::TimeAutosyncPlotter(const std::string& topic_base,
 
   plotters_.push_back(std::make_shared<FloatPlotter>(
       nh_, topic_base + "offset", gr, keep_data_for_secs, kNumSubplotsWide,
-      kNumSubplotsHigh,
-      "Time offset (s)",
-      kOffsetPlotIdx));
+      kNumSubplotsHigh, "Time offset (s)", kOffsetPlotIdx));
 }
 
 SWFPlotter::SWFPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
@@ -118,9 +116,9 @@ void RovioPlotter::reset() {
 }
 
 OdomPredictorPlotter::OdomPredictorPlotter(const std::string& topic_base,
-                           const ros::NodeHandle& nh,
-                           const std::shared_ptr<mglGraph>& gr,
-                           const double keep_data_for_secs)
+                                           const ros::NodeHandle& nh,
+                                           const std::shared_ptr<mglGraph>& gr,
+                                           const double keep_data_for_secs)
     : NodePlotter(topic_base, nh) {
   constexpr size_t kNumSubplotsWide = 3;
   constexpr size_t kNumSubplotsHigh = 2;
@@ -131,9 +129,9 @@ OdomPredictorPlotter::OdomPredictorPlotter(const std::string& topic_base,
   constexpr size_t kAngularVelocityPlotIdx = 5;
 
   plotters_.push_back(std::make_shared<OdometryPlotter>(
-      nh_, topic_base + "predicted_odometry", gr, keep_data_for_secs, kNumSubplotsWide,
-      kNumSubplotsHigh, kPositionPlotIdx, kLinearVelocityPlotIdx,
-      kOrientationPlotIdx, kAngularVelocityPlotIdx));
+      nh_, topic_base + "predicted_odometry", gr, keep_data_for_secs,
+      kNumSubplotsWide, kNumSubplotsHigh, kPositionPlotIdx,
+      kLinearVelocityPlotIdx, kOrientationPlotIdx, kAngularVelocityPlotIdx));
 }
 
 MavrosPlotter::MavrosPlotter(const std::string& topic_base,
@@ -205,7 +203,7 @@ void MSFPlotter::reset() {
   if (client.call(srv)) {
     ROS_INFO_STREAM("MSF Response to Reset: " << srv.response.result);
   } else {
-    ROS_ERROR_STREAM("Failded to reset MSF on "
+    ROS_ERROR_STREAM("Failed to reset MSF on "
                      << topic_base_ + "pose_sensor/initialize_msf_scale");
   }
 }
@@ -244,4 +242,18 @@ MAVControlRWPlotter::MAVControlRWPlotter(const std::string& topic_base,
       keep_data_for_secs, kNumSubplotsWide, kNumSubplotsHigh, kRPYRatePlotIdx,
       kThrustPlotIdx));
 }
+
+void MAVControlRWPlotter::reset() {
+  ros::ServiceClient client =
+      nh_.serviceClient<std_srvs::Empty>("reset_integrator");
+  std_srvs::Empty srv;
+
+  if (client.call(srv)) {
+    ROS_INFO_STREAM(
+        "MAV_Control_RW Response to Reset: " << srv.response.result);
+  } else {
+    ROS_ERROR_STREAM("Failed to reset MAV_Control_RW on reset_integrator");
+  }
+}
+
 #endif

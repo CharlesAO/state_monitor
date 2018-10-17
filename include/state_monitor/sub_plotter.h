@@ -89,7 +89,7 @@ class PlotterData {
       findMinAndMax();
     }
 
-    // move data ptr to keep only keep_data_for_secs data in range
+    // move data ptr to only keep_data_for_secs data in range
     while ((time_data_[data_ptr_offset_] + keep_data_for_secs_) <
            time_data_.back()) {
       ++data_ptr_offset_;
