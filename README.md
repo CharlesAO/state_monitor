@@ -22,6 +22,7 @@ A reset service call to the currently selected node can be performed by pressing
 * Mav Control RW
 * Mavros
 * Time Autosync
+* Odom Predictor
 
 ## Supported Ros Topics
 
