@@ -89,7 +89,7 @@ class PlotterData {
       findMinAndMax();
     }
 
-    // move data ptr to keep only keep_data_for_secs data in range
+    // move data ptr to only keep_data_for_secs data in range
     while ((time_data_[data_ptr_offset_] + keep_data_for_secs_) <
            time_data_.back()) {
       ++data_ptr_offset_;
@@ -135,7 +135,7 @@ class PlotterData {
       max_data_value_ = std::make_pair(0, std::numeric_limits<mreal>::min());
       for (const std::vector<mreal> &element_data : variable_data_) {
         for (size_t i = data_ptr_offset_; i < element_data.size(); ++i) {
-          if (max_data_value_.second < element_data.back()) {
+          if (max_data_value_.second < element_data[i]) {
             max_data_value_ = std::make_pair(i, element_data[i]);
           }
         }
@@ -145,8 +145,8 @@ class PlotterData {
       min_data_value_ = std::make_pair(0, std::numeric_limits<mreal>::max());
       for (const std::vector<mreal> &element_data : variable_data_) {
         for (size_t i = data_ptr_offset_; i < element_data.size(); ++i) {
-          if (max_data_value_.second > element_data.back()) {
-            max_data_value_ = std::make_pair(i, element_data[i]);
+          if (min_data_value_.second > element_data[i]) {
+            min_data_value_ = std::make_pair(i, element_data[i]);
           }
         }
       }
