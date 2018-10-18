@@ -244,14 +244,18 @@ MAVControlRWPlotter::MAVControlRWPlotter(const std::string& topic_base,
 }
 
 void MAVControlRWPlotter::reset() {
-  ros::ServiceClient client =
-      nh_.serviceClient<std_srvs::Empty>("reset_integrator");
+  // same topic naming issues as msf
+  size_t last_char = topic_base_.rfind('/', topic_base_.size() - 2);
+  std::string core_base = topic_base_.substr(0, last_char);
+  std::string srv_name = core_base + "/reset_integrator";
+
+  ros::ServiceClient client = nh_.serviceClient<std_srvs::Empty>(srv_name);
   std_srvs::Empty srv;
 
   if (client.call(srv)) {
-    ROS_INFO_STREAM("Reset MAV_Control_RW on reset_integrator");
+    ROS_INFO_STREAM("Reset MAV_Control_RW on " << srv_name);
   } else {
-    ROS_ERROR_STREAM("Failed to reset MAV_Control_RW on reset_integrator");
+    ROS_ERROR_STREAM("Failed to reset MAV_Control_RW on " << srv_name);
   }
 }
 
