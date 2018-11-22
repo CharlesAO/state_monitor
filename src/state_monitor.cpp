@@ -73,6 +73,17 @@ void StateMonitor::createNodePlotterFromTopicInfo(
     return;
   }
 
+  // Vicon
+  match = topic_info.name.find("vrpn_client");
+  if (match != std::string::npos) {
+    const std::string topic_base = topic_info.name.substr(0, match);
+    node_plotter_map_.emplace(std::make_pair(
+        topic_base, std::make_shared<ViconPlotter>(topic_base, nh_,
+                                                    x11_window_.getMGLGraph(),
+                                                    plot_time_length_secs_)));
+    return;
+  }
+
 // MSF
 #ifdef MSF_FOUND
   match = topic_info.name.find("pose_sensor/parameter_updates");

@@ -164,6 +164,26 @@ MavrosPlotter::MavrosPlotter(const std::string& topic_base,
       kNumSubplotsHigh, kRadioPlotIdx));
 }
 
+ViconPlotter::ViconPlotter(const std::string& topic_base,
+                             const ros::NodeHandle& nh,
+                             const std::shared_ptr<mglGraph>& gr,
+                             const double keep_data_for_secs)
+    : NodePlotter(topic_base, nh) {
+  constexpr size_t kNumSubplotsWide = 4;
+  constexpr size_t kNumSubplotsHigh = 2;
+
+  constexpr size_t kPositionPlotIdx = 1;
+  constexpr size_t kLinearVelocityPlotIdx = 2;
+  constexpr size_t kOrientationPlotIdx = 5;
+  constexpr size_t kAngularVelocityPlotIdx = 6;
+
+  plotters_.push_back(std::make_shared<OdometryPlotter>(
+      nh_, topic_base + "vrpn_client/estimated_odometry", gr, keep_data_for_secs,
+      kNumSubplotsWide, kNumSubplotsHigh, kPositionPlotIdx,
+      kLinearVelocityPlotIdx, kOrientationPlotIdx, kAngularVelocityPlotIdx));
+
+}
+
 #ifdef MSF_FOUND
 MSFPlotter::MSFPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
                        const std::shared_ptr<mglGraph>& gr,

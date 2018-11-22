@@ -69,6 +69,15 @@ class MavrosPlotter : public NodePlotter {
 };
 #endif
 
+class ViconPlotter : public NodePlotter {
+ public:
+  ViconPlotter(const std::string& topic_base, const ros::NodeHandle& nh,
+                const std::shared_ptr<mglGraph>& gr,
+                const double keep_data_for_secs);
+
+  void reset() {}
+};
+
 #ifdef MSF_FOUND
 class MSFPlotter : public NodePlotter {
  public:
